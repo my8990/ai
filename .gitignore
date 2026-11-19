@@ -1,0 +1,42 @@
+# 本地密钥配置，含 API Key / 数据库密码等，禁止提交
+back/src/main/resources/application-local.yml
+back/src/main/resources/application-*.local.yml
+miniapp/utils/amap.local.js
+miniapp/utils/*.local.js
+miniapp/project.private.config.json
+*.env.local
+.env.local
+
+# 用户上传文件（课件、作业、讨论图片等），含真实用户数据
+uploads/
+back/uploads/
+front/uploads/
+
+# 数据库备份与导出，含真实业务数据
+back/*.sql
+!back/src/main/resources/db/init.sql
+*.dump
+*.bak
+
+# 本地调试抓包/临时数据
+back/t.json
+*.timestamp-*.mjs
+
+# 构建产物
+back/target/
+front/dist/
+front/dist-check/
+front/node_modules/
+miniapp/node_modules/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+back/.idea/
+
+# 日志与临时文件
+*.log
+logs/
+.DS_Store
+Thumbs.db

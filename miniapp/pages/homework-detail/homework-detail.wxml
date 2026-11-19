@@ -1,0 +1,57 @@
+<view class="page">
+  <status-bar />
+  <view class="info-card">
+    <view class="info-row"><text class="label">标题</text><text class="value">{{homework.title}}</text></view>
+    <view class="info-row"><text class="label">要求</text><text class="value desc">{{homework.description || '无'}}</text></view>
+    <view class="info-row"><text class="label">截止</text><text class="value">{{homework.deadline || '无限制'}}</text></view>
+    <view class="info-row"><text class="label">提交</text><text class="value">{{homework.submitCount}} / {{homework.totalStudents}}</text></view>
+  </view>
+
+  <view class="section-title">学生提交</view>
+
+  <view wx:if="{{submissions.length === 0}}" class="empty-tip">暂无提交</view>
+
+  <view wx:else class="sub-list">
+    <view wx:for="{{submissions}}" wx:key="id" class="sub-card">
+      <view class="sub-top">
+        <text class="sub-name">{{item.studentName}}</text>
+        <text class="sub-no">{{item.studentNo}}</text>
+        <text class="sub-status {{item.status === 1 ? 'graded' : 'ungraded'}}">{{item.status === 1 ? '已批' : '未批'}}</text>
+      </view>
+      <view wx:if="{{item.content}}" class="sub-content">
+        <text class="content-text">{{item.content}}</text>
+      </view>
+      <view wx:if="{{item.imageList.length}}" class="sub-images">
+        <image wx:for="{{item.imageList}}" wx:for-item="img" wx:key="*this" src="{{img}}" class="sub-img" mode="aspectFill" bindtap="previewImage" data-url="{{img}}" data-urls="{{item.imageList}}" />
+      </view>
+      <view wx:if="{{item.fileUrl}}" class="sub-file">
+        <text class="file-link">📎 {{item.fileName || '附件'}}</text>
+      </view>
+      <view wx:if="{{item.status === 1}}" class="sub-grade">
+        <text class="grade-score">分数: {{item.score}}</text>
+        <text wx:if="{{item.comment}}" class="grade-comment">评语: {{item.comment}}</text>
+      </view>
+      <view class="sub-action">
+        <view class="btn-grade" bindtap="openGrade" data-item="{{item}}">批改</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{gradeVisible}}" class="modal-mask" bindtap="hideGrade">
+    <view class="modal" catchtap="preventBubble">
+      <text class="modal-title">批改作业</text>
+      <view class="form-item">
+        <text class="label">分数</text>
+        <input class="input" type="digit" value="{{gradeForm.score}}" bindinput="onScoreInput" placeholder="0-100" />
+      </view>
+      <view class="form-item col">
+        <text class="label">评语</text>
+        <textarea class="textarea" value="{{gradeForm.comment}}" bindinput="onCommentInput" placeholder="可选" />
+      </view>
+      <view class="modal-btns">
+        <view class="btn-cancel" bindtap="hideGrade">取消</view>
+        <view class="btn-confirm" bindtap="handleGrade">确认</view>
+      </view>
+    </view>
+  </view>
+</view>

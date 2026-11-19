@@ -1,0 +1,63 @@
+<view class="page">
+  <status-bar />
+
+  <view wx:if="{{loading}}" class="loading-tip">加载中...</view>
+
+  <block wx:elif="{{record}}">
+    <view class="score-card">
+      <text class="score-title">{{record.quizTitle}}</text>
+      <view class="score-main">
+        <text class="score-num">{{record.score}}</text>
+        <text class="score-total">/ {{record.fullScore}}</text>
+      </view>
+      <text class="score-label">{{record.courseName || ''}} · {{record.statusText}}</text>
+    </view>
+
+    <view wx:if="{{!record.showAnswer}}" class="tip-bar">本次测验不公布答案与解析</view>
+
+    <view class="q-list">
+      <view wx:for="{{questions}}" wx:key="id" class="q-card {{item.correct ? 'right' : 'wrong'}}">
+        <view class="q-head">
+          <text class="q-no">{{item.no}}.</text>
+          <text class="q-type">{{item.typeText}}</text>
+          <text class="q-score">{{item.score}} 分</text>
+          <text class="q-result {{item.correct ? 'right' : 'wrong'}}">{{item.correct ? '正确' : '错误'}}</text>
+        </view>
+        <text class="q-content">{{item.content}}</text>
+
+        <view wx:if="{{item.type === 4}}" class="q-blank">
+          <view class="blank-row">
+            <text class="blank-label">我的答案</text>
+            <text class="blank-value {{item.correct ? 'right' : 'wrong'}}">{{item.myAnswerText}}</text>
+          </view>
+          <view wx:if="{{record.showAnswer}}" class="blank-row">
+            <text class="blank-label">标准答案</text>
+            <text class="blank-value right">{{item.correctAnswerText}}</text>
+          </view>
+        </view>
+
+        <view wx:else class="q-options">
+          <view
+            wx:for="{{item.optionList}}"
+            wx:for-item="opt"
+            wx:for-index="oi"
+            wx:key="text"
+            class="q-option {{opt.correct ? 'is-correct' : ''}} {{opt.mine ? 'is-mine' : ''}}"
+          >
+            <text class="q-option-label">{{opt.label}}.</text>
+            <text class="q-option-text">{{opt.text}}</text>
+            <text wx:if="{{opt.mine}}" class="q-option-tag mine">我的选择</text>
+            <text wx:if="{{opt.correct && record.showAnswer}}" class="q-option-tag right">正确答案</text>
+          </view>
+        </view>
+
+        <view wx:if="{{record.showAnswer && item.analysis}}" class="q-analysis">
+          <text class="q-analysis-label">解析：</text>
+          <text>{{item.analysis}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="btn-back" bindtap="goBack">返回</view>
+  </block>
+</view>

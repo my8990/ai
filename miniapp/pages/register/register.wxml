@@ -1,0 +1,51 @@
+<view class="auth-container">
+  <status-bar />
+  <view class="auth-card">
+    <text class="auth-title">AI 助手</text>
+    <text class="auth-subtitle">用户注册</text>
+
+    <view class="form-item">
+      <text class="form-label">角色</text>
+      <radio-group bindchange="onRoleChange">
+        <label class="radio-item"><radio value="student" checked="{{role==='student'}}" />学生</label>
+        <label class="radio-item"><radio value="teacher" checked="{{role==='teacher'}}" />教师</label>
+      </radio-group>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">用户名</text>
+      <input class="form-input" placeholder="请输入用户名" value="{{username}}" data-field="username" bindinput="onInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input class="form-input" placeholder="6-20位密码" password value="{{password}}" data-field="password" bindinput="onInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">昵称（选填）</text>
+      <input class="form-input" placeholder="请输入昵称" value="{{nickname}}" data-field="nickname" bindinput="onInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">手机号（选填）</text>
+      <input class="form-input" placeholder="请输入手机号" type="number" value="{{phone}}" data-field="phone" bindinput="onInput" />
+    </view>
+
+    <view class="form-item" wx:if="{{role==='student'}}">
+      <text class="form-label">学号（选填）</text>
+      <input class="form-input" placeholder="请输入学号" value="{{studentNo}}" data-field="studentNo" bindinput="onInput" />
+    </view>
+
+    <view class="form-item" wx:if="{{role==='teacher'}}">
+      <text class="form-label">所属学院（选填）</text>
+      <input class="form-input" placeholder="请输入所属学院" value="{{college}}" data-field="college" bindinput="onInput" />
+    </view>
+
+    <button class="btn-primary" bindtap="handleRegister">注 册</button>
+
+    <view class="auth-footer">
+      已有账号？<text class="auth-link" bindtap="goToLogin">返回登录</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,372 @@
+.page { padding: 56rpx 24rpx 24rpx; background: var(--bg-page); min-height: 100vh; }
+
+/* ---------- 搜索栏 ---------- */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-bottom: 24rpx;
+}
+.search-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 92rpx;
+  padding: 0 28rpx;
+  background: #fff;
+  border-radius: 46rpx;
+  min-width: 0;
+  box-shadow: 0 8rpx 24rpx rgba(99, 102, 241, 0.10);
+}
+.search-bar.focus .search-input-wrap {
+  background: #fff;
+  box-shadow: 0 0 0 2rpx var(--primary-light), 0 8rpx 24rpx rgba(99, 102, 241, 0.14);
+}
+.icon-search {
+  width: 26rpx;
+  height: 26rpx;
+  border: 3rpx solid var(--primary-light);
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 18rpx;
+}
+.icon-search::after {
+  content: '';
+  position: absolute;
+  right: -10rpx;
+  bottom: -6rpx;
+  width: 14rpx;
+  height: 3rpx;
+  background: var(--primary-light);
+  transform: rotate(45deg);
+  border-radius: 2rpx;
+}
+.search-input {
+  flex: 1;
+  font-size: 27rpx;
+  color: var(--text-1);
+  height: 92rpx;
+  min-width: 0;
+}
+.search-fake {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--text-4);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.search-placeholder {
+  color: var(--text-4);
+  font-size: 26rpx;
+}
+.search-clear {
+  width: 34rpx;
+  height: 34rpx;
+  border-radius: 50%;
+  background: #e2e8f0;
+  position: relative;
+  flex-shrink: 0;
+  margin-left: 10rpx;
+}
+.search-clear::before,
+.search-clear::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16rpx;
+  height: 3rpx;
+  background: #fff;
+  border-radius: 2rpx;
+}
+.search-clear::before { transform: translate(-50%, -50%) rotate(45deg); }
+.search-clear::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.search-cancel {
+  font-size: 28rpx;
+  color: var(--primary);
+  flex-shrink: 0;
+  padding: 10rpx 4rpx;
+}
+.search-cancel:active { opacity: 0.7; }
+
+.search-scan {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 10rpx 26rpx rgba(99, 102, 241, 0.32);
+}
+.search-scan:active { opacity: 0.88; }
+.icon-scan-sm {
+  width: 40rpx;
+  height: 40rpx;
+  border: 3rpx solid #fff;
+  border-radius: 9rpx;
+  position: relative;
+}
+.icon-scan-sm::before {
+  content: '';
+  position: absolute;
+  left: 10rpx;
+  top: 10rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border: 3rpx solid #fff;
+  border-radius: 3rpx;
+}
+
+/* ---------- 加入 / 创建课程 ---------- */
+.action-row {
+  margin-bottom: 24rpx;
+}
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+  height: 92rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  box-shadow: 0 10rpx 24rpx rgba(99, 102, 241, 0.28);
+}
+.action-btn:active { opacity: 0.9; }
+.action-btn-icon {
+  width: 26rpx;
+  height: 26rpx;
+  position: relative;
+  flex-shrink: 0;
+}
+.action-btn-icon.add::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 3rpx;
+  height: 26rpx;
+  background: #fff;
+  border-radius: 2rpx;
+}
+.action-btn-icon.add::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26rpx;
+  height: 3rpx;
+  background: #fff;
+  border-radius: 2rpx;
+}
+.action-btn-icon.join {
+  width: 24rpx;
+  height: 24rpx;
+  border: 3rpx solid #fff;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.action-btn-icon.join::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 4rpx;
+  transform: translateX(-50%);
+  width: 3rpx;
+  height: 10rpx;
+  background: #fff;
+  border-radius: 2rpx;
+}
+.action-btn-icon.join::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 4rpx;
+  transform: translateX(-50%);
+  width: 10rpx;
+  height: 3rpx;
+  background: #fff;
+  border-radius: 2rpx;
+}
+.action-btn-text {
+  font-size: 29rpx;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+
+/* ---------- 最近搜索 ---------- */
+.recent-panel {
+  padding: 10rpx 4rpx 0;
+}
+.recent-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+.recent-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-1);
+}
+.recent-trash {
+  padding: 8rpx;
+}
+.recent-trash:active { opacity: 0.6; }
+.trash-icon {
+  width: 30rpx;
+  height: 32rpx;
+  position: relative;
+}
+.trash-lid {
+  position: absolute;
+  left: 0;
+  top: 4rpx;
+  width: 30rpx;
+  height: 3rpx;
+  background: var(--text-2);
+  border-radius: 2rpx;
+}
+.trash-lid::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -8rpx;
+  transform: translateX(-50%);
+  width: 14rpx;
+  height: 8rpx;
+  border: 3rpx solid var(--text-2);
+  border-bottom: none;
+  border-radius: 4rpx 4rpx 0 0;
+  box-sizing: border-box;
+}
+.trash-body {
+  position: absolute;
+  left: 3rpx;
+  top: 9rpx;
+  width: 24rpx;
+  height: 22rpx;
+  border: 3rpx solid var(--text-2);
+  border-top: none;
+  border-radius: 0 0 5rpx 5rpx;
+  box-sizing: border-box;
+}
+.recent-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+.recent-chip {
+  padding: 14rpx 28rpx;
+  background: #fff;
+  border-radius: 999rpx;
+  box-shadow: 0 6rpx 16rpx rgba(30, 41, 59, 0.06);
+}
+.recent-chip:active { background: var(--primary-bg); }
+.recent-chip-text {
+  font-size: 25rpx;
+  color: var(--text-2);
+}
+.recent-empty {
+  padding: 40rpx 0;
+}
+.recent-empty-text {
+  font-size: 25rpx;
+  color: var(--text-4);
+}
+.list-area { margin-top: 4rpx; }
+
+.header {
+  padding-bottom: 20rpx;
+}
+.title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.8rpx;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+}
+.empty-box-icon {
+  width: 110rpx; height: 92rpx;
+  border: 4rpx solid #e2e8f0;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.5;
+}
+.empty-text { font-size: 26rpx; color: var(--text-3); margin-bottom: 24rpx; }
+.empty-btn {
+  padding: 14rpx 36rpx;
+  background: var(--primary);
+  border-radius: 12rpx;
+}
+.empty-btn-text { font-size: 26rpx; color: #fff; }
+
+.course-list { display: flex; flex-direction: column; gap: 16rpx; }
+.course-card {
+  background: #fff;
+  border: 1rpx solid var(--line);
+  border-radius: 20rpx;
+  padding: 26rpx 24rpx;
+  transition: background 0.2s ease;
+}
+.course-card:active { background: #f8fafc; }
+.card-top { display: flex; justify-content: space-between; align-items: center; gap: 12rpx; }
+.card-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-1);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card-status {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.card-status.open { background: var(--success-bg); color: var(--success); }
+.card-status.closed { background: var(--danger-bg); color: var(--danger); }
+.card-semester { font-size: 24rpx; color: var(--text-2); margin-top: 10rpx; display: block; }
+.card-college { font-size: 22rpx; color: var(--text-3); margin-top: 4rpx; display: block; }
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f4f6fb;
+}
+.card-code {
+  font-size: 24rpx;
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1rpx;
+  background: var(--primary-bg);
+  padding: 5rpx 16rpx;
+  border-radius: 999rpx;
+}
+.card-count { font-size: 22rpx; color: var(--text-3); }
+
+.code-input {
+  text-align: center;
+  letter-spacing: 8rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'Courier New', monospace;
+}

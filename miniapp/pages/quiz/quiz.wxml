@@ -1,0 +1,91 @@
+<view class="page">
+  <status-bar />
+  <view class="header-bar">
+    <text class="title">测验列表</text>
+    <text class="sub-title">{{isTeacher ? '点击卡片查看题目与答案' : '点击卡片开始作答'}}</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-tip">加载中...</view>
+
+  <view wx:elif="{{list.length === 0}}" class="empty-state">
+    <view class="empty-box-icon"></view>
+    <text class="empty-text">暂无测验</text>
+  </view>
+
+  <view wx:else class="quiz-list">
+    <view
+      wx:for="{{list}}"
+      wx:key="id"
+      class="quiz-card"
+      data-id="{{item.id}}"
+      bindtap="onCardTap"
+    >
+      <view class="qz-head">
+        <text class="qz-title">{{item.title}}</text>
+        <text class="qz-status {{item.statusClass}}">{{item.statusText}}</text>
+      </view>
+      <text wx:if="{{item.description}}" class="qz-desc">{{item.description}}</text>
+      <view class="qz-meta">
+        <text class="qz-meta-item">{{item.questionCount}} 题</text>
+        <text class="qz-meta-item">满分 {{item.fullScore}}</text>
+        <text wx:if="{{item.durationMinutes > 0}}" class="qz-meta-item">{{item.durationMinutes}} 分钟</text>
+      </view>
+      <view class="qz-foot">
+        <text class="qz-time">截止 {{item.endText}}</text>
+        <text wx:if="{{item.taken}}" class="qz-score">{{item.myScore}} 分</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{detailVisible}}" class="modal-mask" bindtap="closeDetail">
+    <view class="modal" catchtap="preventBubble">
+      <view class="modal-head">
+        <text class="modal-title">{{detail ? detail.title : '测验详情'}}</text>
+        <text class="modal-close" bindtap="closeDetail">×</text>
+      </view>
+
+      <view wx:if="{{detailLoading}}" class="loading-tip">加载中...</view>
+
+      <scroll-view wx:elif="{{detail}}" class="modal-body" scroll-y>
+        <view class="qd-meta">
+          <text>{{detail.questionCount}} 题</text>
+          <text>满分 {{detail.fullScore}}</text>
+          <text>{{detail.durationMinutes > 0 ? detail.durationMinutes + ' 分钟' : '不限时'}}</text>
+        </view>
+        <view wx:for="{{detail.questions}}" wx:key="id" class="qd-item">
+          <view class="qd-title">
+            <text class="qd-no">{{item.no}}.</text>
+            <text class="qd-type">{{item.typeText}}</text>
+            <text class="qd-score">{{item.score}} 分</text>
+          </view>
+          <text class="qd-content">{{item.content}}</text>
+          <view wx:if="{{item.optionList.length > 0}}" class="qd-options">
+            <view
+              wx:for="{{item.optionList}}"
+              wx:for-item="opt"
+              wx:key="label"
+              class="qd-option {{opt.correct ? 'correct' : ''}}"
+            >
+              <text class="qd-option-label">{{opt.label}}.</text>
+              <text>{{opt.text}}</text>
+            </view>
+          </view>
+          <view wx:else class="qd-blank">
+            <text class="qd-blank-label">答案：</text>
+            <text>{{item.answerText}}</text>
+          </view>
+          <view wx:if="{{item.analysis}}" class="qd-analysis">
+            <text class="qd-analysis-label">解析：</text>
+            <text>{{item.analysis}}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view wx:if="{{detail}}" class="modal-foot">
+        <view class="btn-ghost" catchtap="handleDelete">删除</view>
+        <view wx:if="{{detail.assignmentStatus === 0}}" class="btn-primary" catchtap="handlePublish">发布测验</view>
+        <view wx:elif="{{detail.assignmentStatus === 1}}" class="btn-ghost" catchtap="handleEnd">结束测验</view>
+      </view>
+    </view>
+  </view>
+</view>

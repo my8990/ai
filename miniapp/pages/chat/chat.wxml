@@ -1,0 +1,72 @@
+<view class="page">
+  <status-bar />
+  <view wx:if="{{!configured}}" class="config-tip">
+    <text class="config-tip-text">AI 助手尚未配置 API Key，请联系管理员在后台配置后使用。</text>
+  </view>
+
+  <scroll-view class="chat-messages" scroll-y scroll-into-view="{{scrollTarget}}" scroll-with-animation>
+    <view wx:if="{{messages.length === 0}}" class="chat-empty">
+      <view class="empty-icon-wrap">
+        <text class="empty-icon">🤖</text>
+      </view>
+      <text class="empty-title">AI 智慧助手</text>
+      <text class="empty-sub">有什么问题，随时问我吧！</text>
+      <view class="suggestion-chips">
+        <text class="chip" bindtap="useSuggestion" data-text="帮我解释一个概念">💡 解释概念</text>
+        <text class="chip" bindtap="useSuggestion" data-text="帮我梳理知识点">📝 梳理知识点</text>
+        <text class="chip" bindtap="useSuggestion" data-text="推荐一些学习方法">📚 学习方法</text>
+        <text class="chip" bindtap="useSuggestion" data-text="帮我制定复习计划">🗓️ 复习计划</text>
+        <text class="chip" bindtap="useSuggestion" data-text="这道题怎么做">✏️ 解题辅导</text>
+      </view>
+    </view>
+
+    <view wx:for="{{messages}}" wx:key="id" id="msg-{{item.id}}" class="msg {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}">
+      <view class="msg-avatar {{item.role === 'user' ? 'avatar-user' : 'avatar-ai'}}">
+        <text class="avatar-text">{{item.role === 'user' ? '我' : 'AI'}}</text>
+      </view>
+      <view class="msg-body">
+        <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}">
+          <text wx:if="{{item.role === 'user'}}" class="msg-content">{{item.content}}</text>
+          <view wx:elif="{{item.typing && !item.content}}" class="loading-dots">
+            <text class="dot"></text>
+            <text class="dot"></text>
+            <text class="dot"></text>
+          </view>
+          <rich-text wx:else nodes="{{item.html}}" class="msg-rich"></rich-text>
+        </view>
+        <view wx:if="{{!item.typing}}" class="msg-meta {{item.role === 'user' ? 'meta-user' : ''}}">
+          <text class="msg-time">{{item.time}}</text>
+          <text
+            wx:if="{{item.role === 'assistant' && item.content}}"
+            class="msg-copy"
+            catchtap="copyReply"
+            data-content="{{item.content}}"
+          >复制</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{canRegenerate && !loading}}" class="regenerate-row">
+      <text class="regenerate-btn" bindtap="handleRegenerate">↻ 重新生成</text>
+    </view>
+  </scroll-view>
+
+  <view class="chat-input">
+    <text class="clear-btn {{messages.length ? '' : 'disabled'}}" bindtap="handleClear">清空</text>
+    <input
+      class="msg-input"
+      value="{{inputText}}"
+      placeholder="{{loading ? 'AI 正在回复...' : '输入消息...'}}"
+      bindinput="onInput"
+      bindconfirm="handleSend"
+      confirm-type="send"
+      disabled="{{loading}}"
+    />
+    <view wx:if="{{loading}}" class="send-btn stop-btn" bindtap="handleStop">
+      <text class="send-text">停止</text>
+    </view>
+    <view wx:else class="send-btn {{inputText.trim() ? '' : 'disabled'}}" bindtap="handleSend">
+      <text class="send-text">发送</text>
+    </view>
+  </view>
+</view>

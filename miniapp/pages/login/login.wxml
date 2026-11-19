@@ -1,0 +1,27 @@
+<view class="auth-container">
+  <status-bar />
+  <view class="auth-card">
+    <text class="auth-title">AI 助手</text>
+    <text class="auth-subtitle">用户登录</text>
+
+    <view class="form-item">
+      <text class="form-label">用户名</text>
+      <input class="form-input" placeholder="请输入用户名" value="{{username}}" bindinput="onInputUsername" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input class="form-input" placeholder="请输入密码" password value="{{password}}" bindinput="onInputPassword" />
+    </view>
+
+    <button class="btn-primary" bindtap="handleLogin">登 录</button>
+
+    <button class="btn-wx" bindtap="handleWxLogin">
+      微信一键登录
+    </button>
+
+    <view class="auth-footer">
+      还没有账号？<text class="auth-link" bindtap="goToRegister">立即注册</text>
+    </view>
+  </view>
+</view>

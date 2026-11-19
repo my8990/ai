@@ -1,0 +1,10 @@
+<view wx:if="{{visible}}" class="notice-mask" catchtouchmove="noop" bindtap="close">
+  <view class="notice-card" catchtap="noop">
+    <view class="notice-icon {{variant}}" wx:if="{{variant !== 'info'}}">
+      <text>{{variant === 'error' ? '!' : '✓'}}</text>
+    </view>
+    <view class="notice-title {{variant}}">{{title}}</view>
+    <view class="notice-content" wx:if="{{content}}">{{content}}</view>
+    <view class="notice-action {{variant}}" wx:if="{{showAction}}" catchtap="handleAction">{{actionText}}</view>
+  </view>
+</view>

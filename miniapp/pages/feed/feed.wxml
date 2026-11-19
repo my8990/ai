@@ -1,0 +1,173 @@
+<view class="feed page-container">
+  <status-bar />
+  <view class="header">
+    <text class="title">动态</text>
+    <text class="subtitle">关注课程与同学的最新消息</text>
+  </view>
+
+  <view class="tabs">
+    <view
+      class="tab"
+      wx:for="{{tabs}}"
+      wx:key="key"
+      data-key="{{item.key}}"
+      bindtap="switchTab"
+    >
+      <text class="tab-text {{activeTab === item.key ? 'active' : ''}}">{{item.label}}</text>
+      <view wx:if="{{activeTab === item.key}}" class="tab-line"></view>
+    </view>
+  </view>
+
+  <block wx:if="{{activeTab === 'live'}}">
+    <view wx:if="{{sessions.length === 0}}" class="placeholder">
+      <view class="placeholder-icon">
+        <view class="bubble"></view>
+        <view class="bubble small"></view>
+      </view>
+      <text class="placeholder-title">当前无课程正在上课</text>
+      <text class="placeholder-desc">老师开始上课后，这里会显示正在进行的课堂</text>
+    </view>
+
+    <view wx:else class="live-list">
+      <view class="live-card" wx:for="{{sessions}}" wx:key="id">
+        <view class="live-head">
+          <text class="live-course">{{item.courseName}}</text>
+          <view class="live-tag">上课中</view>
+        </view>
+        <text class="live-title">{{item.title}}</text>
+        <view class="live-meta">
+          <text>{{item.teacherName}}</text>
+          <text wx:if="{{role === 'student'}}" class="live-state {{item.checked ? 'done' : ''}}">
+            {{item.checked ? '已签到' : '未签到'}}
+          </text>
+        </view>
+        <view wx:if="{{role === 'student'}}" class="live-actions">
+          <button
+            class="btn-primary btn-sm live-btn"
+            data-id="{{item.id}}"
+            bindtap="enterLive"
+          >
+            {{item.checked ? '进入课堂' : '去签到'}}
+          </button>
+        </view>
+        <view wx:else class="live-tip">请在电脑端进入课堂</view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{activeTab === 'notice'}}">
+    <view wx:if="{{notices.length === 0}}" class="placeholder">
+      <view class="placeholder-icon">
+        <view class="bubble"></view>
+        <view class="bubble small"></view>
+      </view>
+      <text class="placeholder-title">暂无公告</text>
+      <text class="placeholder-desc">关注的课程发布公告后会在这里展示</text>
+    </view>
+
+    <view wx:else class="notice-list">
+      <view
+        wx:for="{{notices}}"
+        wx:key="id"
+        class="notice-card {{item.typeClass}}"
+        data-type="{{item.type}}"
+        data-course-id="{{item.courseId}}"
+        bindtap="goNoticeAction"
+      >
+        <view class="nc-badge {{item.typeClass}}">{{item.typeText}}</view>
+        <view class="nc-body">
+          <text class="nc-title">{{item.title}}</text>
+          <text wx:if="{{item.content}}" class="nc-content">{{item.content}}</text>
+          <view class="nc-meta">
+            <text class="nc-course">{{item.courseName || '未知课程'}}</text>
+            <text class="nc-time">{{item.timeText}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{activeTab === 'homework'}}">
+    <view wx:if="{{homeworks.length === 0}}" class="placeholder">
+      <view class="placeholder-icon">
+        <view class="bubble"></view>
+        <view class="bubble small"></view>
+      </view>
+      <text class="placeholder-title">暂无作业</text>
+      <text class="placeholder-desc">老师布置新作业后会在这里展示</text>
+    </view>
+
+    <view wx:else class="hw-list">
+      <view
+        wx:for="{{homeworks}}"
+        wx:key="id"
+        class="hw-card"
+        data-id="{{item.id}}"
+        data-course-id="{{item.courseId}}"
+        bindtap="goHomework"
+      >
+        <view class="hw-head">
+          <view class="hw-tag">{{item.courseName || '未知课程'}}</view>
+          <view class="hw-status {{item.statusClass}}">{{item.statusTag}}</view>
+        </view>
+        <text class="hw-title">{{item.title}}</text>
+        <text wx:if="{{item.description}}" class="hw-desc">{{item.description}}</text>
+        <view class="hw-meta">
+          <view class="hw-deadline">
+            <text class="hw-meta-label">截止</text>
+            <text class="hw-meta-value">{{item.deadlineText}}</text>
+          </view>
+          <view wx:if="{{item.submitted && item.graded}}" class="hw-score">
+            <text class="hw-meta-label">得分</text>
+            <text class="hw-meta-value highlight">{{item.myScore}}/{{item.fullScore}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view wx:if="{{quizzes.length === 0}}" class="placeholder">
+      <view class="placeholder-icon">
+        <view class="bubble"></view>
+        <view class="bubble small"></view>
+      </view>
+      <text class="placeholder-title">暂无测验</text>
+      <text class="placeholder-desc">老师发布测验后会在这里展示</text>
+    </view>
+
+    <view wx:else class="qz-list">
+      <view
+        wx:for="{{quizzes}}"
+        wx:key="id"
+        class="qz-card"
+        data-id="{{item.id}}"
+        data-assignment-id="{{item.assignmentId}}"
+        data-course-id="{{item.courseId}}"
+        data-taken="{{item.taken}}"
+        data-can-take="{{item.canTake}}"
+        data-status-text="{{item.statusText}}"
+        bindtap="goQuiz"
+      >
+        <view class="qz-head">
+          <view class="qz-tag">{{item.courseName || '我的题库'}}</view>
+          <view class="qz-status {{item.statusClass}}">{{item.statusText}}</view>
+        </view>
+        <text class="qz-title">{{item.title}}</text>
+        <text wx:if="{{item.description}}" class="qz-desc">{{item.description}}</text>
+        <view class="qz-meta">
+          <text class="qz-meta-item">{{item.questionCount}} 题</text>
+          <text class="qz-meta-item">满分 {{item.fullScore}}</text>
+          <text wx:if="{{item.durationMinutes > 0}}" class="qz-meta-item">{{item.durationMinutes}} 分钟</text>
+        </view>
+        <view class="qz-foot">
+          <text class="qz-time">截止 {{item.endText}}</text>
+          <text wx:if="{{item.taken}}" class="qz-score">{{item.myScore}} 分</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <notice-popup id="noticePopup" />
+  <code-input id="codeInputPopup" />
+</view>

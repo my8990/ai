@@ -1,0 +1,31 @@
+<view class="appeal-page">
+  <status-bar />
+  <view class="ban-notice" wx:if="{{userInfo.status === 0}}">
+    <text class="ban-icon">⚠️</text>
+    <text>您的账号已被禁用</text>
+    <text class="ban-reason" wx:if="{{userInfo.banReason}}">原因：{{userInfo.banReason}}</text>
+  </view>
+
+  <view class="submit-section" wx:if="{{!hasPending}}">
+    <text class="section-title">提交申诉</text>
+    <textarea class="reason-input" placeholder="请详细说明申诉理由" value="{{reason}}" bindinput="onInputReason" maxlength="500" />
+    <button class="submit-btn" bindtap="handleSubmit">提交申诉</button>
+  </view>
+
+  <view class="pending-notice" wx:if="{{hasPending}}">
+    <text>您已有待处理的申诉，请耐心等待管理员审核</text>
+  </view>
+
+  <view class="list-section">
+    <text class="section-title">申诉记录</text>
+    <view class="appeal-item" wx:for="{{appealList}}" wx:key="id">
+      <view class="appeal-reason">理由：{{item.reason}}</view>
+      <view class="appeal-status status-{{item.status}}">
+        {{item.status === 0 ? '待处理' : item.status === 1 ? '已通过' : '已驳回'}}
+      </view>
+      <view class="appeal-reply" wx:if="{{item.reply}}">回复：{{item.reply}}</view>
+      <view class="appeal-time">{{item.createTime}}</view>
+    </view>
+    <view class="empty-tip" wx:if="{{appealList.length === 0}}">暂无申诉记录</view>
+  </view>
+</view>

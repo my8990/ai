@@ -1,0 +1,30 @@
+# 本地开发配置模板
+# 使用方法：复制本文件为 application-local.yml，填入真实值后启动。
+# application-local.yml 已被 .gitignore 排除，不会提交到仓库。
+
+spring:
+  datasource:
+    # 本地 MySQL 密码；也可用环境变量 DB_PASSWORD 覆盖
+    password: your-db-password
+
+jwt:
+  # 至少 32 字节，生成方式：openssl rand -base64 32
+  secret: your-jwt-secret-at-least-32-bytes-long
+
+wechat:
+  # 微信小程序登录（不使用小程序端可留空）
+  appid: your-wechat-appid
+  secret: your-wechat-secret
+
+ai:
+  # 大模型服务 Key（不启用 AI 助手可留空，服务仍可正常启动）
+  api-key: your-ai-api-key
+
+amap:
+  # 高德地图 Key（不使用位置签到可留空）
+  key: your-amap-key
+
+app:
+  checkin:
+    # 签到二维码 HMAC 密钥，至少 16 字节
+    qr-secret: your-checkin-qr-secret-16-bytes

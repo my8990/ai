@@ -1,0 +1,57 @@
+<view class="page">
+  <status-bar />
+  <view class="info-card">
+    <view class="info-row"><text class="label">标题</text><text class="value">{{homework.title}}</text></view>
+    <view class="info-row"><text class="label">要求</text><text class="value desc">{{homework.description || '无'}}</text></view>
+    <view class="info-row"><text class="label">截止</text><text class="value">{{homework.deadline || '无限制'}}</text></view>
+  </view>
+
+  <view wx:if="{{homework.expired}}" class="expired-tip">⚠️ 作业已过截止时间</view>
+
+  <view class="form-section">
+    <text class="section-title">我的提交</text>
+
+    <view class="form-group">
+      <text class="form-label">文字内容</text>
+      <textarea class="form-textarea" placeholder="输入文字内容" value="{{form.content}}" bindinput="onContentInput" disabled="{{homework.expired}}" />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">图片</text>
+      <view class="image-grid">
+        <view wx:for="{{imageList}}" wx:key="*this" class="img-item">
+          <image src="{{item}}" class="img" mode="aspectFill" bindtap="previewImage" data-idx="{{index}}" />
+          <view wx:if="{{!homework.expired}}" class="img-del" bindtap="removeImage" data-idx="{{index}}">✕</view>
+        </view>
+        <view wx:if="{{imageList.length < 9 && !homework.expired}}" class="img-add" bindtap="chooseImage">
+          <text class="add-icon">+</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">附件</text>
+      <view wx:if="{{form.fileName}}" class="file-item">
+        <text class="file-name">📎 {{form.fileName}}</text>
+        <view wx:if="{{!homework.expired}}" class="file-del" bindtap="removeFile">删除</view>
+      </view>
+      <view wx:elif="{{!homework.expired}}" class="btn-upload" bindtap="chooseFile">从聊天选择文件</view>
+    </view>
+  </view>
+
+  <view wx:if="{{!homework.expired}}" class="btn-submit" bindtap="handleSubmit">
+    <text>{{mySubmit ? '更新提交' : '提交作业'}}</text>
+  </view>
+
+  <view wx:if="{{mySubmit.status === 1}}" class="grade-card">
+    <text class="grade-title">批改结果</text>
+    <view class="grade-row">
+      <text class="grade-label">分数</text>
+      <text class="grade-score">{{mySubmit.score}}</text>
+    </view>
+    <view wx:if="{{mySubmit.comment}}" class="grade-row">
+      <text class="grade-label">评语</text>
+      <text class="grade-val">{{mySubmit.comment}}</text>
+    </view>
+  </view>
+</view>

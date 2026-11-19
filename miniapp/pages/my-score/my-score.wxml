@@ -1,0 +1,70 @@
+<view class="page">
+  <status-bar />
+  <view class="total-card">
+    <text class="total-label">总评成绩</text>
+    <text class="total-score">{{score.totalScore || '-'}}</text>
+  </view>
+
+  <view class="detail-card">
+    <text class="section-title">成绩构成</text>
+
+    <view class="rule-row">
+      <text class="rule-label">签到占比</text>
+      <text class="rule-val">{{score.checkinWeight}}%</text>
+    </view>
+    <view class="rule-row">
+      <text class="rule-label">作业占比</text>
+      <text class="rule-val">{{score.homeworkWeight}}%</text>
+    </view>
+  </view>
+
+  <view class="breakdown-card">
+    <text class="section-title">分项得分</text>
+
+    <view class="bar-item">
+      <text class="bar-label">签到 {{score.checkinWeight}}%</text>
+      <view class="bar-track">
+        <view class="bar-fill checkin" style="width: {{score.checkinScore || 0}}%"></view>
+      </view>
+      <text class="bar-val">{{score.checkinScore || 0}}</text>
+    </view>
+    <view class="bar-info">
+      <text class="bar-detail">已签 {{score.checkinCount || 0}} / 共 {{score.totalCheckin || 0}} 次</text>
+    </view>
+
+    <view class="bar-item">
+      <text class="bar-label">作业 {{score.homeworkWeight}}%</text>
+      <view class="bar-track">
+        <view class="bar-fill homework" style="width: {{score.homeworkScore || 0}}%"></view>
+      </view>
+      <text class="bar-val">{{score.homeworkScore || 0}}</text>
+    </view>
+  </view>
+
+  <view class="detail-card">
+    <text class="section-title">签到明细</text>
+    <view wx:if="{{!detail.checkins || detail.checkins.length === 0}}" class="empty-row">暂无签到记录</view>
+    <view wx:for="{{detail.checkins}}" wx:key="checkinId" class="record-row">
+      <view class="record-main">
+        <text class="record-title">{{item.title}}</text>
+        <text class="record-sub">{{item.timeText || '-'}}</text>
+      </view>
+      <text class="record-status {{item.status === 1 ? 'ok' : item.status === 2 ? 'late' : 'miss'}}">{{item.statusText}}</text>
+    </view>
+  </view>
+
+  <view class="detail-card">
+    <text class="section-title">作业明细</text>
+    <view wx:if="{{!detail.homeworks || detail.homeworks.length === 0}}" class="empty-row">暂无作业记录</view>
+    <view wx:for="{{detail.homeworks}}" wx:key="homeworkId" class="record-row">
+      <view class="record-main">
+        <text class="record-title">{{item.title}}</text>
+        <text class="record-sub">{{item.comment || '暂无评语'}}</text>
+      </view>
+      <view class="record-right">
+        <text class="record-score">{{item.score != null ? item.score : '-'}} / {{item.fullScore}}</text>
+        <text class="record-status {{item.status === 2 ? 'ok' : item.status === 1 ? 'pending' : 'miss'}}">{{item.statusText}}</text>
+      </view>
+    </view>
+  </view>
+</view>

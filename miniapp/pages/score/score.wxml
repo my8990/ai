@@ -1,0 +1,58 @@
+<view class="page">
+  <status-bar />
+  <view class="rule-card">
+    <text class="section-title">成绩占比设置</text>
+    <view class="rule-row">
+      <text class="rule-label">签到占比</text>
+      <slider class="rule-slider" data-key="checkinWeight" value="{{rule.checkinWeight}}" min="0" max="100" step="5" activeColor="#6366f1" block-size="20" bindchange="onSliderChange" />
+      <text class="rule-val">{{rule.checkinWeight}}%</text>
+    </view>
+    <view class="rule-row">
+      <text class="rule-label">作业占比</text>
+      <slider class="rule-slider" data-key="homeworkWeight" value="{{rule.homeworkWeight}}" min="0" max="100" step="5" activeColor="#6366f1" block-size="20" bindchange="onSliderChange" />
+      <text class="rule-val">{{rule.homeworkWeight}}%</text>
+    </view>
+    <view class="rule-row">
+      <text class="rule-label">测验占比</text>
+      <slider class="rule-slider" data-key="quizWeight" value="{{rule.quizWeight}}" min="0" max="100" step="5" activeColor="#6366f1" block-size="20" bindchange="onSliderChange" />
+      <text class="rule-val">{{rule.quizWeight}}%</text>
+    </view>
+    <view class="btn-save" bindtap="handleSetRule">保存规则</view>
+  </view>
+
+  <view class="score-section">
+    <view class="section-bar">
+      <text class="section-title">学生成绩</text>
+      <view class="btn-export" bindtap="handleExport">导出Excel</view>
+    </view>
+
+    <view wx:if="{{loading}}" class="loading-tip">加载中...</view>
+    <view wx:elif="{{scoreList.length === 0}}" class="empty-tip">暂无成绩数据</view>
+    <view wx:else class="score-list">
+      <view wx:for="{{scoreList}}" wx:key="studentId" class="score-card">
+        <view class="score-top">
+          <text class="score-name">{{item.studentName}}</text>
+          <text class="score-no">{{item.studentNo}}</text>
+        </view>
+        <view class="score-detail">
+          <view class="score-item">
+            <text class="item-label">签到</text>
+            <text class="item-val">{{item.checkinCount}}/{{item.totalCheckin}} → {{item.checkinScore}}分</text>
+          </view>
+          <view class="score-item">
+            <text class="item-label">作业</text>
+            <text class="item-val">{{item.homeworkScore}}分</text>
+          </view>
+          <view class="score-item">
+            <text class="item-label">测验</text>
+            <text class="item-val">{{item.quizCount}}/{{item.totalQuiz}} → {{item.quizScore}}分</text>
+          </view>
+        </view>
+        <view class="score-total">
+          <text class="total-label">总评</text>
+          <text class="total-val">{{item.totalScore}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

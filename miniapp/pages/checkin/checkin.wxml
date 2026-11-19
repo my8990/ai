@@ -1,0 +1,59 @@
+<view class="page">
+  <status-bar />
+  <view wx:if="{{checkins.length === 0}}" class="empty-state">
+    <view class="empty-box-icon"></view>
+    <text class="empty-text">暂无签到记录</text>
+  </view>
+
+  <view class="checkin-list">
+    <view wx:for="{{checkins}}" wx:key="id" class="checkin-card">
+      <view class="card-left-bar {{item.status === 1 ? 'active' : 'ended'}}"></view>
+      <view class="card-body">
+        <view class="card-top">
+          <text class="card-title">{{item.title}}</text>
+          <text class="card-status {{item.status === 1 ? 'active' : 'ended'}}">{{item.status === 1 ? '进行中' : '已结束'}}</text>
+        </view>
+        <view class="card-info">
+          <text class="info-item">类型: {{item.type === 1 ? '数字签到' : '二维码签到'}}</text>
+          <text class="info-item code">签到码: {{item.code}}</text>
+        </view>
+        <view class="card-info">
+          <text class="info-item">签到: {{item.checkedCount}}/{{item.totalCount}}人</text>
+          <text class="info-item time">{{item.createTime}}</text>
+        </view>
+        <view class="card-btns">
+          <view class="btn-detail" bindtap="showDetail" data-id="{{item.id}}">
+            <text>详情</text>
+          </view>
+          <view wx:if="{{item.status === 1}}" class="btn-end" bindtap="handleEnd" data-id="{{item.id}}">
+            <text>结束</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{detailVisible}}" class="modal-mask" bindtap="hideDetail">
+    <view class="modal" catchtap="preventBubble">
+      <text class="modal-title">签到详情</text>
+      <view class="detail-row"><text class="label">标题</text><text class="val">{{detail.title}}</text></view>
+      <view class="detail-row"><text class="label">签到码</text><text class="val code">{{detail.code}}</text></view>
+      <view class="detail-row"><text class="label">签到人数</text><text class="val">{{detail.checkedCount}}/{{detail.totalCount}}</text></view>
+      <view class="record-list">
+        <text class="record-title">学生签到情况 ({{detail.checkedCount}}/{{detail.totalCount}})</text>
+        <view wx:for="{{detail.records}}" wx:key="studentId" class="record-item">
+          <text class="r-name">{{item.nickname || item.username}}</text>
+          <text class="r-no">{{item.studentNo || ''}}</text>
+          <text class="r-status {{item.checked ? 'yes' : 'no'}}">{{item.checked ? '是' : '否'}}</text>
+          <text class="r-time">{{item.checkinTime || '—'}}</text>
+        </view>
+        <view wx:if="{{detail.records.length === 0}}" class="empty-tip">
+          <text>暂无学生</text>
+        </view>
+      </view>
+      <view class="modal-btns">
+        <view class="modal-btn close" bindtap="hideDetail"><text>关闭</text></view>
+      </view>
+    </view>
+  </view>
+</view>

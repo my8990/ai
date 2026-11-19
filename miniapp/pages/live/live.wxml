@@ -1,0 +1,82 @@
+<view class="page">
+  <status-bar />
+
+  <view class="live-header">
+    <view class="header-left">
+      <text class="course-name">{{courseName || '课堂'}}</text>
+      <text class="live-title">{{title}}</text>
+    </view>
+    <view class="live-header-right">
+      <text wx:if="{{status === 1}}" class="live-conn {{connected ? 'on' : ''}}">{{connected ? '实时' : '同步中'}}</text>
+      <text class="live-status {{status === 1 ? 'active' : 'ended'}}">{{status === 1 ? '上课中' : '已下课'}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{ended}}" class="ended-box">
+    <text class="ended-icon">🏁</text>
+    <text class="ended-title">课堂已结束</text>
+    <text class="ended-tip">{{errorMsg || '老师已下课，请留意下次课堂通知'}}</text>
+    <view wx:if="{{courseId}}" class="ended-btn" bindtap="goCourse">返回课程</view>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{quiz && quiz.status === 1}}" class="quiz-banner">
+      <view class="quiz-banner-main">
+        <text class="quiz-banner-title">随堂测验：{{quiz.title}}</text>
+        <text class="quiz-banner-meta">{{quiz.questionCount}} 题 · 满分 {{quiz.fullScore}}{{quiz.durationMinutes ? ' · 限时' + quiz.durationMinutes + ' 分钟' : ''}}</text>
+      </view>
+      <view wx:if="{{quiz.mySubmitted}}" class="quiz-banner-btn done">已提交</view>
+      <view wx:else class="quiz-banner-btn" bindtap="goQuiz">去答题</view>
+    </view>
+
+    <image wx:for="{{preloadUrls}}" wx:key="*this" class="preload-image" src="{{item}}" mode="aspectFit" lazy-load />
+    <view wx:if="{{slide}}" class="slide-box">
+      <image class="slide-image" src="{{slide.imageUrl}}" mode="widthFix" bindtap="previewSlide" />
+    </view>
+
+    <view wx:else class="waiting-box">
+      <text class="waiting-icon">⏳</text>
+      <text class="waiting-text">等待老师上传课件...</text>
+    </view>
+
+    <view class="footer-bar">
+      <text class="page-info">第 {{currentPage}} / {{slideTotal}} 页</text>
+      <text class="follow-tip">画面自动跟随老师翻页</text>
+    </view>
+
+    <view wx:if="{{status === 1}}" class="interact-bar">
+      <view class="interact-btn {{handRaised ? 'on' : ''}}" bindtap="toggleHand">
+        <text>{{handRaised ? '已举手' : '举手'}}</text>
+      </view>
+      <view class="interact-btn ask" bindtap="openAsk">
+        <text>提问</text>
+      </view>
+    </view>
+
+    <view wx:if="{{askVisible}}" class="ask-mask" bindtap="closeAsk">
+      <view class="ask-panel" catchtap="noop">
+        <text class="ask-title">课堂提问</text>
+        <textarea class="ask-input" value="{{askText}}" maxlength="200" placeholder="输入你的问题（200字以内）" bindinput="onAskInput" />
+        <view class="ask-actions">
+          <view class="ask-cancel" bindtap="closeAsk">取消</view>
+          <view class="ask-submit {{askLoading ? 'disabled' : ''}}" bindtap="submitAsk">{{askLoading ? '提交中...' : '提交'}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="live-stats">
+      <view class="stat-item">
+        <text class="stat-value">{{onlineCount}}</text>
+        <text class="stat-label">在线同学</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{checkedCount}}</text>
+        <text class="stat-label">已签到</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{totalCount}}</text>
+        <text class="stat-label">应到人数</text>
+      </view>
+    </view>
+  </block>
+</view>

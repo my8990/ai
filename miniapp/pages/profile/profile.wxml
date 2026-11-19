@@ -1,0 +1,41 @@
+<view class="profile page-container">
+  <status-bar />
+  <view class="user-card">
+    <view class="user-bg"></view>
+    <view class="user-content">
+      <view class="avatar">
+        <text class="avatar-text">{{avatarLetter}}</text>
+      </view>
+      <view class="user-info">
+        <text class="user-name">{{userInfo.nickname || userInfo.username}}</text>
+        <view class="role-tag role-{{userInfo.role}}">{{roleLabel}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="menu-card">
+    <view wx:if="{{userInfo.role === 'teacher'}}" class="menu-item" bindtap="goTeacherCheckin">
+      <view class="menu-icon checkin-icon"></view>
+      <text class="menu-text">签到管理</text>
+      <view class="menu-arrow"></view>
+    </view>
+    <view wx:if="{{userInfo.role === 'admin'}}" class="menu-item" bindtap="goAdmin">
+      <view class="menu-icon review-icon"></view>
+      <text class="menu-text">教师审核</text>
+      <view class="menu-arrow"></view>
+    </view>
+    <view class="menu-item" bindtap="goAppeal">
+      <view class="menu-icon appeal-icon"></view>
+      <text class="menu-text">账号申诉</text>
+      <view class="menu-arrow"></view>
+    </view>
+  </view>
+
+  <view class="menu-card">
+    <view class="menu-item" bindtap="handleLogout">
+      <view class="menu-icon logout-icon"></view>
+      <text class="menu-text logout-text">退出登录</text>
+      <view class="menu-arrow"></view>
+    </view>
+  </view>
+</view>

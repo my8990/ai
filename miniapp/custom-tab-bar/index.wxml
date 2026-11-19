@@ -1,0 +1,12 @@
+<view class="tab-bar">
+  <view wx:for="{{list}}" wx:key="key" class="tab-item" data-path="{{item.pagePath}}" bindtap="switchTab">
+    <view class="tab-icon-wrap">
+      <view wx:if="{{item.key === 'home'}}" class="icon icon-home {{selected === item.key ? 'active' : ''}}"></view>
+      <view wx:if="{{item.key === 'course'}}" class="icon icon-course {{selected === item.key ? 'active' : ''}}"></view>
+      <view wx:if="{{item.key === 'feed'}}" class="icon icon-feed {{selected === item.key ? 'active' : ''}}"></view>
+      <view wx:if="{{item.key === 'checkin'}}" class="icon icon-checkin {{selected === item.key ? 'active' : ''}}"></view>
+      <view wx:if="{{item.key === 'profile'}}" class="icon icon-profile {{selected === item.key ? 'active' : ''}}"></view>
+    </view>
+    <text class="tab-label {{selected === item.key ? 'active' : ''}}">{{item.text}}</text>
+  </view>
+</view>

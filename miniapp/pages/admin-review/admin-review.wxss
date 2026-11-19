@@ -1,0 +1,60 @@
+.page { padding: 24rpx; background: var(--bg-page); min-height: 100vh; }
+
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24rpx;
+  border-bottom: 1rpx solid var(--line);
+}
+.tab {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--text-3);
+  padding: 20rpx 12rpx 18rpx;
+  position: relative;
+  transition: color 0.2s;
+}
+.tab.active {
+  color: var(--text-1);
+  font-weight: 700;
+}
+.tab.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -1rpx;
+  transform: translateX(-50%);
+  width: 56rpx;
+  height: 4rpx;
+  border-radius: 4rpx;
+  background: var(--primary);
+}
+
+.empty { text-align: center; padding: 110rpx 0; color: var(--text-3); font-size: 26rpx; }
+
+.teacher-card {
+  background: #fff;
+  border: 1rpx solid var(--line);
+  border-radius: 20rpx;
+  padding: 26rpx 24rpx;
+  margin-bottom: 16rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20rpx;
+}
+.info { flex: 1; display: flex; flex-direction: column; gap: 6rpx; min-width: 0; }
+.name { font-size: 29rpx; font-weight: 600; color: var(--text-1); }
+.detail { font-size: 23rpx; color: var(--text-3); }
+.status {
+  font-size: 20rpx;
+  padding: 5rpx 16rpx;
+  border-radius: 999rpx;
+  display: inline-block;
+  margin-top: 6rpx;
+  align-self: flex-start;
+}
+.status.approved { background: var(--success-bg); color: var(--success); }
+.status.pending { background: var(--warning-bg); color: var(--warning); }
+.btns { display: flex; gap: 12rpx; flex-shrink: 0; }

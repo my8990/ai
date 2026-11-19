@@ -1,0 +1,119 @@
+<view class="page">
+  <status-bar />
+  <view class="header-bar">
+    <text class="title">班级讨论</text>
+    <view class="btn-create" bindtap="showCreate">+ 发帖</view>
+  </view>
+
+  <view class="filter-bar">
+    <scroll-view class="filter-scroll" scroll-x enable-flex>
+      <view class="filter-group">
+        <view
+          wx:for="{{authorOptions}}"
+          wx:key="key"
+          class="chip {{authorFilter === item.key ? 'active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="changeAuthorFilter"
+        >{{item.label}}</view>
+      </view>
+      <view class="filter-divider"></view>
+      <view class="filter-group">
+        <view
+          wx:for="{{timeOptions}}"
+          wx:key="key"
+          class="chip {{timeFilter === item.key ? 'active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="changeTimeFilter"
+        >{{item.label}}</view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-tip">加载中...</view>
+
+  <view wx:elif="{{list.length === 0}}" class="empty-state">
+    <view class="empty-box-icon"></view>
+    <text class="empty-text">还没有帖子，来发第一条吧</text>
+  </view>
+
+  <view wx:else class="post-list">
+    <view wx:for="{{list}}" wx:key="id" class="post-card">
+      <view class="post-head">
+        <view class="avatar {{item.isTeacher ? 'teacher' : ''}}">{{item.letter}}</view>
+        <view class="post-author">
+          <view class="author-row">
+            <text class="author-name">{{item.authorName}}</text>
+            <text wx:if="{{item.isTeacher}}" class="role-badge teacher">老师</text>
+          </view>
+          <text class="author-meta">{{item.timeText}}</text>
+        </view>
+        <text wx:if="{{item.canDelete}}" class="op danger" catchtap="handleDelete" data-id="{{item.id}}">删除</text>
+      </view>
+
+      <text class="post-content">{{item.content}}</text>
+
+      <view wx:if="{{item.imageList.length > 0}}" class="img-grid">
+        <image
+          wx:for="{{item.imageList}}"
+          wx:for-item="img"
+          wx:for-index="imgIndex"
+          wx:key="*this"
+          class="post-img"
+          src="{{img}}"
+          mode="aspectFill"
+          catchtap="previewImage"
+          data-index="{{imgIndex}}"
+          data-urls="{{item.imageList}}"
+        />
+      </view>
+
+      <view class="post-actions">
+        <text class="action {{item.liked ? 'liked' : ''}}" catchtap="handleLike" data-id="{{item.id}}">
+          {{item.liked ? '已赞' : '点赞'}} {{item.likeCount || 0}}
+        </text>
+        <text class="action">评论 {{item.commentCount || 0}}</text>
+      </view>
+
+      <view wx:if="{{item.comments.length > 0}}" class="comment-list">
+        <view wx:for="{{item.comments}}" wx:for-item="c" wx:key="id" class="comment-item">
+          <view class="comment-head">
+            <text class="c-author">{{c.authorName}}</text>
+            <text wx:if="{{c.isTeacher}}" class="role-badge teacher sm">老师</text>
+            <text class="c-time">{{c.timeText}}</text>
+            <text wx:if="{{c.canDelete}}" class="op danger" catchtap="handleDeleteComment" data-id="{{c.id}}">删除</text>
+          </view>
+          <text class="c-content">{{c.content}}</text>
+        </view>
+      </view>
+
+      <view class="comment-input-row">
+        <input
+          class="comment-input"
+          placeholder="写下你的评论..."
+          value="{{commentInputs[item.id]}}"
+          bindinput="onCommentInput"
+          data-id="{{item.id}}"
+        />
+        <text class="comment-send" catchtap="handleComment" data-id="{{item.id}}">发送</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showCreate}}" class="modal-mask" bindtap="hideCreate">
+    <view class="modal" catchtap="preventBubble">
+      <text class="modal-title">发布帖子</text>
+      <textarea class="textarea" placeholder="分享你的想法..." value="{{createForm.content}}" bindinput="onContentInput" maxlength="2000" />
+      <view class="img-grid">
+        <view wx:for="{{createForm.images}}" wx:key="*this" class="img-wrap">
+          <image class="post-img" src="{{item}}" mode="aspectFill" />
+          <text class="img-del" catchtap="removeImage" data-index="{{index}}">×</text>
+        </view>
+        <view wx:if="{{createForm.images.length < 9}}" class="img-add" bindtap="chooseImages">+</view>
+      </view>
+      <view class="modal-btns">
+        <view class="btn-cancel" bindtap="hideCreate">取消</view>
+        <view class="btn-confirm" bindtap="handleCreate">发布</view>
+      </view>
+    </view>
+  </view>
+</view>

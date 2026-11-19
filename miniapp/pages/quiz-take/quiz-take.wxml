@@ -1,0 +1,62 @@
+<view class="page">
+  <status-bar />
+
+  <view wx:if="{{loading}}" class="loading-tip">加载中...</view>
+
+  <block wx:elif="{{quiz}}">
+    <view class="quiz-header">
+      <text class="quiz-title">{{quiz.title}}</text>
+      <text wx:if="{{quiz.description}}" class="quiz-desc">{{quiz.description}}</text>
+      <view class="quiz-bar">
+        <text class="bar-item">共 {{questions.length}} 题</text>
+        <text class="bar-item">满分 {{quiz.fullScore}}</text>
+        <text class="bar-item time {{urgent ? 'urgent' : ''}}">{{timeText}}</text>
+      </view>
+    </view>
+
+    <view class="q-list">
+      <view wx:for="{{questions}}" wx:for-index="qi" wx:key="id" class="q-card">
+        <view class="q-head">
+          <text class="q-no">{{item.no}}.</text>
+          <text class="q-type">{{item.typeText}}</text>
+          <text class="q-score">{{item.score}} 分</text>
+        </view>
+        <text class="q-content">{{item.content}}</text>
+
+        <view wx:if="{{item.type === 4}}" class="q-blank">
+          <input
+            class="blank-input"
+            placeholder="请输入答案"
+            value="{{item.blank}}"
+            data-qi="{{qi}}"
+            bindinput="onBlankInput"
+          />
+        </view>
+
+        <view wx:else class="q-options">
+          <view
+            wx:for="{{item.options}}"
+            wx:for-item="opt"
+            wx:for-index="oi"
+            wx:key="text"
+            class="q-option {{opt.checked ? 'checked' : ''}}"
+            data-qi="{{qi}}"
+            data-oi="{{oi}}"
+            bindtap="onOptionTap"
+          >
+            <view class="q-check {{opt.checked ? 'on' : ''}} {{item.type === 2 ? 'square' : ''}}"></view>
+            <text class="q-option-label">{{opt.label}}</text>
+            <text class="q-option-text">{{opt.text}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="submit-bar">
+      <text class="submit-info">已答 {{answeredCount}}/{{questions.length}}</text>
+      <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="onSubmitTap">
+        {{submitting ? '提交中...' : '提交答卷'}}
+      </view>
+    </view>
+  </block>
+</view>

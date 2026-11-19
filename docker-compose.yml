@@ -1,0 +1,103 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ai-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-123456}
+      MYSQL_DATABASE: ai_assistant
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${DB_PASSWORD:-123456}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  redis:
+    image: redis:7-alpine
+    container_name: ai-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: ai-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  app:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: ai-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/ai_assistant?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD:-123456}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+      JWT_SECRET: ${JWT_SECRET:-LocalDevJwtSecretKeyMustBeAtLeast32BytesLong!}
+      CHECKIN_QR_SECRET: ${CHECKIN_QR_SECRET:-LocalDevCheckinQrSecretKeyAtLeast16Bytes}
+      STRICT_CONFIG: ${STRICT_CONFIG:-false}
+      LIVE_BROADCAST_MODE: ${LIVE_BROADCAST_MODE:-rabbit}
+      LIVE_CACHE_MODE: ${LIVE_CACHE_MODE:-local}
+      MQ_AUDIT_ENABLED: ${MQ_AUDIT_ENABLED:-true}
+      MQ_HEALTH_ENABLED: "true"
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-deepseek-flash}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.deepseek.com}
+      AMAP_KEY: ${AMAP_KEY:-}
+      WECHAT_APPID: ${WECHAT_APPID:-}
+      WECHAT_SECRET: ${WECHAT_SECRET:-}
+      FILE_UPLOAD_DIR: /app/uploads
+      LOG_PATH: /app/logs
+    ports:
+      - "8080:8080"
+    volumes:
+      - app-uploads:/app/uploads
+      - app-logs:/app/logs
+
+volumes:
+  mysql-data:
+  redis-data:
+  rabbitmq-data:
+  app-uploads:
+  app-logs:

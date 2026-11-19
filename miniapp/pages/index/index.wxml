@@ -1,0 +1,167 @@
+<view class="home page-container">
+  <status-bar />
+  <view wx:if="{{userInfo.role === 'student'}}" class="search-bar">
+    <view class="search-input-wrap">
+      <view class="icon-search"></view>
+      <input class="search-input" value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" placeholder="输入课程名称或访问码" placeholder-class="search-placeholder" />
+      <view wx:if="{{keyword}}" class="search-clear" bindtap="clearKeyword"></view>
+    </view>
+    <view class="search-scan" bindtap="scanJoinCourse">
+      <view class="icon-scan-sm"></view>
+    </view>
+  </view>
+
+  <view class="greet">
+    <text class="greet-text">{{greetText}}</text>
+  </view>
+
+  <view wx:if="{{userInfo.role === 'student'}}" class="quick-card">
+    <view class="quick-btn scan {{scanning ? 'loading' : ''}}" hover-class="quick-btn-hover" bindtap="goScanCheckin">
+      <view wx:if="{{scanning}}" class="quick-spinner"></view>
+      <view wx:else class="quick-icon icon-qr"></view>
+      <text class="quick-text">{{scanning ? '检测中' : '扫码签到'}}</text>
+    </view>
+    <view class="quick-btn sign {{checking ? 'loading' : ''}}" hover-class="quick-btn-hover" bindtap="goMyCheckin">
+      <view wx:if="{{checking}}" class="quick-spinner"></view>
+      <view wx:else class="quick-icon icon-sign"></view>
+      <text class="quick-text">{{checking ? '检测中' : '数字签到'}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{userInfo.role === 'student'}}" class="visit-section">
+    <view class="section-head">
+      <text class="section-title">最近访问</text>
+      <text wx:if="{{courses.length > 0}}" class="section-link" bindtap="goCourse">全部课程</text>
+    </view>
+
+    <scroll-view wx:if="{{filteredCourses.length > 0}}" scroll-x class="visit-scroll" show-scrollbar="{{false}}">
+      <view wx:for="{{filteredCourses}}" wx:key="id" class="visit-card" bindtap="goCourseDetail" data-id="{{item.id}}">
+        <view class="visit-cover">
+          <image wx:if="{{item.cover}}" class="visit-cover-img" src="{{item.cover}}" mode="aspectFill" />
+          <view wx:else class="visit-illust">
+            <view class="illust-screen"></view>
+            <view class="illust-stand"></view>
+            <view class="illust-book left"></view>
+            <view class="illust-book right"></view>
+          </view>
+        </view>
+        <view class="visit-body">
+          <view class="visit-title-row">
+            <view class="visit-badge"></view>
+            <text class="visit-name">{{item.name}}</text>
+          </view>
+          <text class="visit-code">{{item.code}}</text>
+          <text class="visit-college">{{item.college || item.semester || '暂无学院信息'}}</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view wx:elif="{{keyword.length === 6}}" class="join-hint" bindtap="joinByKeyword">
+      <text class="join-hint-title">未找到课程「{{keyword}}」</text>
+      <text class="join-hint-sub">点击加入该课程</text>
+    </view>
+    <view wx:else class="empty-mini">
+      <text class="empty-mini-text">{{keyword ? '没有匹配的课程' : '暂无课程，可扫码加入'}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{userInfo.role === 'student'}}" class="todo-section">
+    <view class="section-head">
+      <text class="section-title">待办事项</text>
+      <view class="section-btn" bindtap="goCheckinList">
+        <text class="section-btn-text">查看全部</text>
+      </view>
+    </view>
+
+    <view wx:if="{{todoList.length === 0}}" class="todo-empty">
+      <view class="todo-empty-icon">
+        <view class="clip-top"></view>
+        <view class="clip-check"></view>
+      </view>
+      <text class="todo-empty-text">所在课程暂无待办事项</text>
+    </view>
+    <view wx:else class="recent-list">
+      <view wx:for="{{todoList}}" wx:key="key" class="recent-item" bindtap="goTodo" data-type="{{item.type}}" data-course="{{item.courseId}}">
+        <view class="recent-type {{item.type}}">{{item.tag}}</view>
+        <view class="recent-content">
+          <text class="recent-title">{{item.title}}</text>
+          <text class="recent-course">{{item.courseName}}</text>
+        </view>
+        <text class="recent-status active">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{userInfo.role === 'teacher'}}" class="stats-grid">
+    <view class="stat-card">
+      <text class="stat-num">{{teacherStats.studentCount}}</text>
+      <text class="stat-label">学生总数</text>
+    </view>
+    <view class="stat-card">
+      <text class="stat-num">{{teacherStats.checkinCount}}</text>
+      <text class="stat-label">签到活动</text>
+    </view>
+    <view class="stat-card">
+      <text class="stat-num">{{teacherStats.activeCount}}</text>
+      <text class="stat-label">进行中</text>
+    </view>
+  </view>
+
+  <view wx:if="{{userInfo.role === 'teacher'}}" class="action-section">
+    <text class="section-title">教学管理</text>
+    <view class="action-grid quad">
+      <view class="action-item" bindtap="goCourse">
+        <view class="action-icon-wrap course">
+          <view class="icon-course-mgmt"></view>
+        </view>
+        <text class="action-text">课程管理</text>
+        <text class="action-desc">班级与成员</text>
+      </view>
+      <view class="action-item" bindtap="goTeacherCheckin">
+        <view class="action-icon-wrap checkin-mgmt">
+          <view class="icon-checkin-mgmt"></view>
+        </view>
+        <text class="action-text">签到管理</text>
+        <text class="action-desc">发起课堂签到</text>
+      </view>
+      <view class="action-item" bindtap="goAdmin">
+        <view class="action-icon-wrap review">
+          <view class="icon-review"></view>
+        </view>
+        <text class="action-text">教师审核</text>
+        <text class="action-desc">账号资质审核</text>
+      </view>
+      <view class="action-item" bindtap="goChat">
+        <view class="action-icon-wrap scan">
+          <view class="icon-chat"></view>
+        </view>
+        <text class="action-text">AI 助手</text>
+        <text class="action-desc">备课与答疑</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{userInfo.role === 'teacher'}}" class="recent-section">
+    <text class="section-title">最近动态</text>
+    <view wx:if="{{recentList.length === 0}}" class="empty-state">
+      <view class="empty-box-icon"></view>
+      <text class="empty-text">暂无动态</text>
+    </view>
+    <view wx:else class="recent-list">
+      <view wx:for="{{recentList}}" wx:key="key" class="recent-item">
+        <view class="recent-type {{item.type}}">{{item.type === 'homework' ? '作业' : '签到'}}</view>
+        <view class="recent-content">
+          <text class="recent-title">{{item.title}}</text>
+          <text class="recent-course">{{item.courseName}}</text>
+        </view>
+        <view class="recent-right">
+          <text class="recent-status {{item.active ? 'active' : ''}}">{{item.statusText}}</text>
+          <text class="recent-time">{{item.timeText}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <notice-popup id="noticePopup" />
+  <code-input id="codeInputPopup" />
+</view>

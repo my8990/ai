@@ -1,0 +1,29 @@
+<view wx:if="{{visible}}" class="code-mask" catchtouchmove="noop" bindtap="close">
+  <view class="code-card" catchtap="noop">
+    <view class="code-title">数字签到</view>
+    <view class="code-subtitle">请输入老师给出的 6 位签到码</view>
+
+    <view class="code-boxes {{errorText ? 'is-error' : ''}}" bindtap="focusInput">
+      <view class="code-box {{index === value.length && focused ? 'is-active' : ''}}" wx:for="{{digits}}" wx:key="index">
+        <text wx:if="{{item}}">{{item}}</text>
+      </view>
+      <input
+        class="code-hidden-input"
+        type="number"
+        maxlength="6"
+        value="{{value}}"
+        focus="{{focused}}"
+        bindinput="onInput"
+        confirm-type="done" />
+    </view>
+
+    <view class="code-error" wx:if="{{errorText}}">{{errorText}}</view>
+
+    <view class="code-actions">
+      <view class="code-btn ghost" catchtap="close">取消</view>
+      <view class="code-btn primary {{submitting ? 'disabled' : ''}}" catchtap="submit">
+        {{submitting ? '签到中' : '签到'}}
+      </view>
+    </view>
+  </view>
+</view>

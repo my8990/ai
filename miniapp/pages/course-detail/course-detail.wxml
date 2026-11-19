@@ -1,0 +1,450 @@
+<view class="page">
+  <status-bar />
+  <view class="hero">
+    <view class="hero-bg"></view>
+    <view class="hero-content">
+      <view class="hero-icon-wrap">
+        <view class="hero-icon"></view>
+      </view>
+      <view class="hero-info">
+        <text class="hero-title">{{course.name}}</text>
+        <text class="hero-sub">{{course.semester}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{role === 'student' && liveSession && liveSession.status === 1}}" class="live-entry" bindtap="enterLive">
+    <view class="live-entry-left">
+      <view class="live-entry-head">
+        <view class="live-dot"></view>
+        <text class="live-entry-title">课堂进行中</text>
+      </view>
+      <text class="live-entry-sub">{{liveSession.title}}</text>
+    </view>
+    <view class="live-entry-btn">进入课堂</view>
+  </view>
+
+  <scroll-view class="tab-bar" scroll-x show-scrollbar="{{false}}">
+    <view class="tab-inner">
+      <view
+        wx:for="{{tabs}}"
+        wx:key="key"
+        class="tab-item {{activeTab === item.key ? 'active' : ''}}"
+        bindtap="switchTab"
+        data-key="{{item.key}}"
+      >
+        <text class="tab-text">{{item.name}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view wx:if="{{activeTab === 'info'}}" class="tab-panel">
+    <view class="info-card">
+      <view class="info-row">
+        <text class="label">学院</text>
+        <text class="value">{{course.college || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="label">状态</text>
+        <text class="value {{course.status === 1 ? 'open' : 'closed'}}">{{course.status === 1 ? '开放' : '关闭'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="label">课程码</text>
+        <text class="value code">{{course.code}}</text>
+      </view>
+      <view class="info-row">
+        <text class="label">学生人数</text>
+        <text class="value">{{course.studentCount}}人</text>
+      </view>
+      <view class="info-row">
+        <text class="label">授课教师</text>
+        <text class="value">{{course.teacherName}}</text>
+      </view>
+      <view class="info-row" wx:if="{{course.description}}">
+        <text class="label">简介</text>
+        <text class="value desc">{{course.description}}</text>
+      </view>
+    </view>
+
+    <view class="actions">
+      <block wx:if="{{role === 'teacher'}}">
+        <view class="action-btn toggle" bindtap="handleToggle">
+          <text>{{course.status === 1 ? '关闭课程' : '开放课程'}}</text>
+        </view>
+        <view class="action-btn danger" bindtap="handleDissolve">
+          <text>解散课程</text>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="action-btn danger" bindtap="handleQuit">
+          <text>退出课程</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view wx:if="{{activeTab === 'score'}}" class="tab-panel">
+    <block wx:if="{{role === 'teacher'}}">
+      <view class="panel-head">
+        <text class="panel-title">成绩占比设置</text>
+      </view>
+      <view class="score-rule-card">
+        <view class="score-rule-row">
+          <text class="score-rule-label">签到占比</text>
+          <slider class="score-rule-slider" value="{{scoreRule.checkinWeight}}" min="0" max="100" step="5" activeColor="#6366f1" block-size="20" bindchange="onScoreSliderChange" />
+          <text class="score-rule-val">{{scoreRule.checkinWeight}}%</text>
+        </view>
+        <view class="score-rule-row">
+          <text class="score-rule-label">作业占比</text>
+          <text class="score-rule-val">{{scoreRule.homeworkWeight}}%</text>
+        </view>
+        <view class="score-save-btn" bindtap="handleSaveScoreRule">保存规则</view>
+      </view>
+
+      <view class="panel-head">
+        <text class="panel-title">学生成绩</text>
+        <view class="panel-action" bindtap="handleExportScore">导出 Excel</view>
+      </view>
+      <view wx:if="{{scoreLoading}}" class="panel-empty"><text>加载中...</text></view>
+      <view wx:elif="{{scoreList.length === 0}}" class="panel-empty"><text>暂无成绩数据</text></view>
+      <view wx:else class="score-student-list">
+        <view wx:for="{{scoreList}}" wx:key="studentId" class="score-student-card">
+          <view class="score-student-top">
+            <text class="score-student-name">{{item.studentName}}</text>
+            <text class="score-student-no">{{item.studentNo}}</text>
+          </view>
+          <view class="score-student-detail">
+            <view class="score-student-item">
+              <text class="score-item-label">签到</text>
+              <text class="score-item-val">{{item.checkinCount}}/{{item.totalCheckin}} → {{item.checkinScore}}分</text>
+            </view>
+            <view class="score-student-item">
+              <text class="score-item-label">作业</text>
+              <text class="score-item-val">{{item.homeworkScore}}分</text>
+            </view>
+          </view>
+          <view class="score-student-total">
+            <text class="score-student-total-label">总评</text>
+            <text class="score-student-total-val">{{item.totalScore}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view wx:if="{{scoreLoading}}" class="panel-empty"><text>加载中...</text></view>
+      <block wx:else>
+        <view class="score-hero">
+          <text class="score-hero-label">总评成绩</text>
+          <text class="score-hero-val">{{myScore.totalScore || '-'}}</text>
+        </view>
+
+        <view class="score-block">
+          <text class="score-block-title">成绩构成</text>
+          <view class="score-kv-row">
+            <text class="score-kv-label">签到占比</text>
+            <text class="score-kv-val">{{myScore.checkinWeight}}%</text>
+          </view>
+          <view class="score-kv-row">
+            <text class="score-kv-label">作业占比</text>
+            <text class="score-kv-val">{{myScore.homeworkWeight}}%</text>
+          </view>
+        </view>
+
+        <view class="score-block">
+          <text class="score-block-title">分项得分</text>
+          <view class="score-bar-item">
+            <text class="score-bar-label">签到</text>
+            <view class="score-bar-track">
+              <view class="score-bar-fill checkin" style="width: {{myScore.checkinScore || 0}}%"></view>
+            </view>
+            <text class="score-bar-val">{{myScore.checkinScore || 0}}</text>
+          </view>
+          <text class="score-bar-info">已签 {{myScore.checkinCount || 0}} / 共 {{myScore.totalCheckin || 0}} 次</text>
+          <view class="score-bar-item">
+            <text class="score-bar-label">作业</text>
+            <view class="score-bar-track">
+              <view class="score-bar-fill homework" style="width: {{myScore.homeworkScore || 0}}%"></view>
+            </view>
+            <text class="score-bar-val">{{myScore.homeworkScore || 0}}</text>
+          </view>
+        </view>
+
+        <view class="score-block">
+          <text class="score-block-title">签到明细</text>
+          <view wx:if="{{!myScoreDetail.checkins || myScoreDetail.checkins.length === 0}}" class="score-empty-row">暂无签到记录</view>
+          <view wx:for="{{myScoreDetail.checkins}}" wx:key="checkinId" class="score-record-row">
+            <view class="score-record-main">
+              <text class="score-record-title">{{item.title}}</text>
+              <text class="score-record-sub">{{item.timeText || '-'}}</text>
+            </view>
+            <text class="score-record-status {{item.status === 1 ? 'ok' : item.status === 2 ? 'late' : 'miss'}}">{{item.statusText}}</text>
+          </view>
+        </view>
+
+        <view class="score-block">
+          <text class="score-block-title">作业明细</text>
+          <view wx:if="{{!myScoreDetail.homeworks || myScoreDetail.homeworks.length === 0}}" class="score-empty-row">暂无作业记录</view>
+          <view wx:for="{{myScoreDetail.homeworks}}" wx:key="homeworkId" class="score-record-row">
+            <view class="score-record-main">
+              <text class="score-record-title">{{item.title}}</text>
+              <text class="score-record-sub">{{item.comment || '暂无评语'}}</text>
+            </view>
+            <view class="score-record-right">
+              <text class="score-record-score">{{item.score != null ? item.score : '-'}} / {{item.fullScore}}</text>
+              <text class="score-record-status {{item.status === 2 ? 'ok' : item.status === 1 ? 'pending' : 'miss'}}">{{item.statusText}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </block>
+  </view>
+
+  <view wx:if="{{activeTab === 'notice'}}" class="tab-panel">
+    <view class="panel-head">
+      <text class="panel-title">公告</text>
+      <view wx:if="{{role === 'teacher'}}" class="panel-action" bindtap="showCreateNotice">
+        <text>+ 发布公告</text>
+      </view>
+    </view>
+    <view wx:if="{{notices.length === 0}}" class="panel-empty">
+      <text>暂无公告</text>
+    </view>
+    <view wx:else class="notice-list">
+      <view wx:for="{{notices}}" wx:key="id" class="notice-card {{item.typeClass}}">
+        <view class="notice-card-head">
+          <text class="notice-type-tag {{item.typeClass}}">{{item.typeText}}</text>
+          <text class="notice-card-time">{{item.timeText}}</text>
+        </view>
+        <view class="notice-card-body">
+          <text class="notice-card-title">{{item.title}}</text>
+          <text wx:if="{{item.content}}" class="notice-card-content">{{item.content}}</text>
+        </view>
+        <view wx:if="{{role === 'teacher' && item.type !== 1}}" class="notice-card-foot">
+          <view class="notice-del-btn" catchtap="handleDeleteNotice" data-id="{{item.id}}" data-title="{{item.title}}">
+            <text>删除</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{role === 'teacher' && activeTab === 'students'}}" class="tab-panel">
+    <text class="section-title">学生名单 ({{course.studentCount}}人)</text>
+    <view wx:if="{{students.length === 0}}" class="empty-state">
+      <view class="empty-icon"></view>
+      <text class="empty-text">暂无学生</text>
+    </view>
+    <view wx:else class="student-list">
+      <view wx:for="{{students}}" wx:key="id" class="student-item">
+        <view class="student-avatar">
+          <text class="student-letter">{{item.letter}}</text>
+        </view>
+        <view class="student-info">
+          <text class="s-name">{{item.nickname || item.username}}</text>
+          <text class="s-no">{{item.studentNo || ''}}</text>
+        </view>
+        <text class="s-status {{item.status === 1 ? 'normal' : 'quit'}}">{{item.status === 1 ? '正常' : '已退课'}}</text>
+        <view wx:if="{{item.status === 1}}" class="btn-remove" data-student-id="{{item.studentId}}" data-name="{{item.nickname || item.username}}" bindtap="handleRemoveStudent">
+          <text class="btn-remove-text">移除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{activeTab === 'checkin'}}" class="tab-panel">
+    <view class="panel-head">
+      <text class="panel-title">{{role === 'teacher' ? '签到记录' : '我的签到'}}</text>
+      <view wx:if="{{role === 'teacher'}}" class="panel-action" bindtap="showCreateCheckin">
+        <text>+ 发布签到</text>
+      </view>
+    </view>
+    <view wx:if="{{checkins.length === 0}}" class="panel-empty">
+      <text>暂无签到记录</text>
+    </view>
+
+    <view wx:elif="{{role === 'teacher'}}" class="mini-list">
+      <view wx:for="{{checkins}}" wx:key="id" class="mini-card" bindtap="goCheckinDetail" data-id="{{item.id}}">
+        <view class="mini-main">
+          <view class="mini-top">
+            <text class="mini-title">{{item.title}}</text>
+            <text class="mini-tag {{item.status === 1 ? 'on' : 'off'}}">{{item.status === 1 ? '进行中' : '已结束'}}</text>
+          </view>
+          <text class="mini-meta">{{item.type === 1 ? '数字签到' : '二维码签到'}} · 签到码 {{item.code}}</text>
+          <text class="mini-meta">{{item.checkedCount}}/{{item.totalCount}}人 · {{item.createTime}}</text>
+        </view>
+        <view wx:if="{{item.status === 1}}" class="mini-btn danger" catchtap="handleEndCheckin" data-id="{{item.id}}">
+          <text>结束</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="mini-list">
+      <view wx:for="{{checkins}}" wx:key="id" class="mini-card checkin-my-card" bindtap="goCheckinDetail" data-id="{{item.id}}">
+        <view class="mini-main">
+          <view class="mini-top">
+            <text class="mini-title">{{item.title}}</text>
+            <text class="mini-tag {{item.myStatusClass}}">{{item.myStatusText}}</text>
+          </view>
+          <text class="mini-meta">{{item.type === 1 ? '数字签到' : '二维码签到'}} · 活动{{item.statusText}}</text>
+          <view class="checkin-meta-row">
+            <text class="checkin-meta-key">发起时间</text>
+            <text class="checkin-meta-val">{{item.createTimeText || '-'}}</text>
+          </view>
+          <view wx:if="{{item.checked}}" class="checkin-meta-row">
+            <text class="checkin-meta-key">签到时间</text>
+            <text class="checkin-meta-val">{{item.checkinTimeText || '-'}}</text>
+          </view>
+          <view wx:if="{{item.checked}}" class="checkin-meta-row" catchtap="openCheckinMap" data-lat="{{item.latitude}}" data-lng="{{item.longitude}}" data-address="{{item.addressText}}">
+            <text class="checkin-meta-key">签到位置</text>
+            <view class="checkin-meta-col">
+              <text class="checkin-meta-val">{{item.addressText || '点击查看地图位置'}}</text>
+              <text wx:if="{{item.addressDetail}}" class="checkin-meta-sub">{{item.addressDetail}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{activeTab === 'homework'}}" class="tab-panel">
+    <view class="panel-head">
+      <text class="panel-title">作业</text>
+      <view class="panel-action" bindtap="goHomework">
+        <text>{{role === 'teacher' ? '发布 / 管理 >' : '全部作业 >'}}</text>
+      </view>
+    </view>
+    <view wx:if="{{homeworks.length === 0}}" class="panel-empty">
+      <text>暂无作业</text>
+    </view>
+    <view wx:else class="mini-list">
+      <view wx:for="{{homeworks}}" wx:key="id" class="mini-card" bindtap="goHomeworkDetail" data-id="{{item.id}}">
+        <view class="mini-main">
+          <view class="mini-top">
+            <text class="mini-title">{{item.title}}</text>
+            <text class="mini-tag {{item.expired ? 'off' : 'on'}}">{{item.expired ? '已截止' : '进行中'}}</text>
+          </view>
+          <text class="mini-meta">{{item.description || '无要求'}}</text>
+          <text class="mini-meta">提交 {{item.submitCount}}/{{item.totalStudents}} · {{item.createTime}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{activeTab === 'material'}}" class="tab-panel">
+    <view class="panel-head">
+      <text class="panel-title">课件资源</text>
+      <view class="panel-action" bindtap="goMaterial">
+        <text>{{role === 'teacher' ? '上传 / 管理 >' : '全部课件 >'}}</text>
+      </view>
+    </view>
+    <view wx:if="{{materials.length === 0}}" class="panel-empty">
+      <text>暂无课件</text>
+    </view>
+    <view wx:else class="mini-list">
+      <view wx:for="{{materials}}" wx:key="id" class="mini-card" bindtap="openMaterial" data-index="{{index}}">
+        <view class="file-badge {{item.isImage ? 'image' : ''}}">{{item.fileIcon}}</view>
+        <view class="mini-main">
+          <view class="mini-top">
+            <text class="mini-title">{{item.title}}</text>
+            <text wx:if="{{item.status === 0}}" class="mini-tag off">已下架</text>
+          </view>
+          <text class="mini-meta">{{item.fileName || ''}}</text>
+          <text class="mini-meta">{{item.sizeText}} · {{item.timeText}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{activeTab === 'discussion'}}" class="tab-panel">
+    <view class="panel-head">
+      <text class="panel-title">班级讨论</text>
+      <view class="panel-action" bindtap="goDiscussion">
+        <text>进入讨论区 ></text>
+      </view>
+    </view>
+    <view wx:if="{{posts.length === 0}}" class="panel-empty">
+      <text>还没有帖子，去发第一条吧</text>
+    </view>
+    <view wx:else class="mini-list">
+      <view wx:for="{{posts}}" wx:key="id" class="mini-card" bindtap="goDiscussion">
+        <view class="post-avatar">{{item.letter}}</view>
+        <view class="mini-main">
+          <view class="mini-top">
+            <text class="mini-title">{{item.authorName}}</text>
+            <text class="mini-tag off">{{item.authorRole === 'teacher' ? '教师' : '学生'}}</text>
+          </view>
+          <text class="post-text">{{item.content}}</text>
+          <text class="mini-meta">{{item.timeText}} · 赞 {{item.likeCount || 0}} · 评论 {{item.commentCount || 0}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{activeTab === 'quiz'}}" class="tab-panel">
+    <view class="panel-head">
+      <text class="panel-title">测验</text>
+      <view class="panel-action" bindtap="goQuiz">
+        <text>{{role === 'teacher' ? '发布 / 管理 >' : '全部测验 >'}}</text>
+      </view>
+    </view>
+    <view wx:if="{{quizzes.length === 0}}" class="panel-empty">
+      <text>暂无测验</text>
+    </view>
+    <view wx:else class="mini-list">
+      <view wx:for="{{quizzes}}" wx:key="id" class="mini-card" bindtap="goQuiz">
+        <view class="mini-main">
+          <view class="mini-top">
+            <text class="mini-title">{{item.title}}</text>
+            <text class="mini-tag {{item.statusClass === 'ended' || item.statusClass === 'draft' ? 'off' : 'on'}}">{{item.statusText}}</text>
+          </view>
+          <text class="mini-meta">{{item.description || '暂无说明'}}</text>
+          <text class="mini-meta">{{item.questionCount}} 题 · 满分 {{item.fullScore}} · 截止 {{item.endText}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{createCheckinVisible}}" class="modal-mask" bindtap="hideCreateCheckin">
+    <view class="modal" catchtap="preventBubble">
+      <text class="modal-title">发布签到</text>
+      <view class="form-item">
+        <text class="form-label">签到标题</text>
+        <input class="form-input" value="{{checkinForm.title}}" bindinput="onCheckinInput" data-field="title" placeholder="例: 第3周课堂签到" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">签到类型</text>
+        <view class="radio-group">
+          <text class="radio {{checkinForm.type === 1 ? 'active' : ''}}" bindtap="setCheckinType" data-type="1">数字签到</text>
+          <text class="radio {{checkinForm.type === 2 ? 'active' : ''}}" bindtap="setCheckinType" data-type="2">二维码签到</text>
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">过期(分钟)</text>
+        <input class="form-input" type="number" value="{{checkinForm.expireMinutes}}" bindinput="onCheckinInput" data-field="expireMinutes" placeholder="0表示手动结束" />
+      </view>
+      <view class="modal-btns">
+        <view class="modal-btn cancel" bindtap="hideCreateCheckin"><text>取消</text></view>
+        <view class="modal-btn confirm" bindtap="handleCreateCheckin"><text>发布</text></view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{createNoticeVisible}}" class="modal-mask" bindtap="hideCreateNotice">
+    <view class="modal" catchtap="preventBubble">
+      <text class="modal-title">发布公告</text>
+      <view class="form-item">
+        <text class="form-label">公告标题</text>
+        <input class="form-input" value="{{noticeForm.title}}" bindinput="onNoticeInput" data-field="title" placeholder="请输入公告标题" maxlength="100" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">公告内容</text>
+        <textarea class="form-textarea" value="{{noticeForm.content}}" bindinput="onNoticeInput" data-field="content" placeholder="请输入公告内容（可选）" maxlength="500" />
+      </view>
+      <view class="modal-btns">
+        <view class="modal-btn cancel" bindtap="hideCreateNotice"><text>取消</text></view>
+        <view class="modal-btn confirm" bindtap="handleCreateNotice"><text>发布</text></view>
+      </view>
+    </view>
+  </view>
+</view>

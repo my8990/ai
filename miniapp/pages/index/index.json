@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "AI 助手",
+  "usingComponents": {
+    "notice-popup": "/components/notice-popup/index",
+    "code-input": "/components/code-input/index"
+  }
+}

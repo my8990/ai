@@ -1,0 +1,93 @@
+.appeal-page { padding: 24rpx; background: var(--bg-page); min-height: 100vh; }
+
+.ban-notice {
+  background: var(--danger-bg);
+  border: 1rpx solid #fecaca;
+  border-radius: 18rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.ban-icon { font-size: 32rpx; }
+.ban-reason { color: #dc2626; font-size: 25rpx; }
+
+.submit-section {
+  background: #fff;
+  border: 1rpx solid var(--line);
+  border-radius: 20rpx;
+  padding: 26rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  margin-bottom: 18rpx;
+  display: block;
+  color: var(--text-1);
+}
+.reason-input {
+  width: 100%;
+  height: 220rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  margin-bottom: 20rpx;
+  font-size: 26rpx;
+  background: #f8fafc;
+}
+.submit-btn {
+  background: var(--primary);
+  color: #fff;
+  border-radius: 14rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  padding: 22rpx 0;
+}
+.submit-btn::after { border: none; }
+
+.pending-notice {
+  background: var(--warning-bg);
+  border: 1rpx solid #fde68a;
+  border-radius: 18rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  color: #b45309;
+  font-size: 26rpx;
+}
+
+.list-section {
+  background: #fff;
+  border: 1rpx solid var(--line);
+  border-radius: 20rpx;
+  padding: 26rpx 24rpx;
+}
+.appeal-item {
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid #f4f6fb;
+}
+.appeal-item:last-child { border-bottom: none; }
+.appeal-reason { font-size: 26rpx; color: var(--text-1); margin-bottom: 10rpx; line-height: 1.6; }
+.appeal-status {
+  display: inline-block;
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  margin-bottom: 10rpx;
+}
+.status-0 { background: var(--warning-bg); color: var(--warning); }
+.status-1 { background: var(--success-bg); color: var(--success); }
+.status-2 { background: var(--danger-bg); color: var(--danger); }
+.appeal-reply {
+  font-size: 24rpx;
+  color: var(--text-2);
+  margin-bottom: 10rpx;
+  background: #f8fafc;
+  border-radius: 12rpx;
+  padding: 14rpx 18rpx;
+  line-height: 1.6;
+}
+.appeal-time { font-size: 21rpx; color: var(--text-3); }
+.empty-tip { text-align: center; color: var(--text-3); padding: 50rpx 0; font-size: 26rpx; }

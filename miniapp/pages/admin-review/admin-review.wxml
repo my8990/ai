@@ -1,0 +1,37 @@
+<view class="page">
+  <status-bar />
+  <view class="tabs">
+    <text class="tab {{activeTab === 'pending' ? 'active' : ''}}" bindtap="switchTab" data-tab="pending">待审核 ({{pendingList.length}})</text>
+    <text class="tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">全部教师</text>
+  </view>
+
+  <block wx:if="{{activeTab === 'pending'}}">
+    <view wx:if="{{pendingList.length === 0}}" class="empty">
+      <text>暂无待审核教师</text>
+    </view>
+    <view wx:for="{{pendingList}}" wx:key="id" class="teacher-card">
+      <view class="info">
+        <text class="name">{{item.nickname || item.username}}</text>
+        <text class="detail">{{item.college || ''}}</text>
+        <text class="detail">{{item.phone || ''}}</text>
+      </view>
+      <view class="btns">
+        <button size="mini" type="primary" bindtap="handleApprove" data-id="{{item.id}}">通过</button>
+        <button size="mini" type="warn" bindtap="handleReject" data-id="{{item.id}}">驳回</button>
+      </view>
+    </view>
+  </block>
+
+  <block wx:if="{{activeTab === 'all'}}">
+    <view wx:if="{{allList.length === 0}}" class="empty">
+      <text>暂无教师</text>
+    </view>
+    <view wx:for="{{allList}}" wx:key="id" class="teacher-card">
+      <view class="info">
+        <text class="name">{{item.nickname || item.username}}</text>
+        <text class="detail">{{item.college || ''}}</text>
+        <text class="status {{item.approved === 1 ? 'approved' : 'pending'}}">{{item.approved === 1 ? '已通过' : '待审核'}}</text>
+      </view>
+    </view>
+  </block>
+</view>

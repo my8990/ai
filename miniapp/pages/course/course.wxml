@@ -1,0 +1,119 @@
+<view class="page">
+  <status-bar />
+  <view class="header" wx:if="{{!searchMode}}">
+    <text class="title">我的课程</text>
+  </view>
+
+  <view class="search-bar {{searchMode ? 'focus' : ''}}">
+    <view class="search-input-wrap" bindtap="enterSearch">
+      <view class="icon-search"></view>
+      <input wx:if="{{searchMode}}" class="search-input" value="{{keyword}}" focus="{{searchFocus}}" bindinput="onSearchInput" bindconfirm="onSearchConfirm" confirm-type="search" placeholder="输入课程名称或访问码" placeholder-class="search-placeholder" />
+      <text wx:else class="search-fake">输入课程名称或访问码</text>
+      <view wx:if="{{searchMode && keyword}}" class="search-clear" catchtap="clearKeyword"></view>
+    </view>
+    <view wx:if="{{!searchMode}}" class="search-scan" bindtap="scanJoinCourse">
+      <view class="icon-scan-sm"></view>
+    </view>
+    <text wx:else class="search-cancel" bindtap="exitSearch">取消</text>
+  </view>
+
+  <view wx:if="{{!searchMode}}" class="action-row">
+    <view wx:if="{{role === 'teacher'}}" class="action-btn" bindtap="showCreate">
+      <view class="action-btn-icon add"></view>
+      <text class="action-btn-text">创建课程</text>
+    </view>
+    <view wx:else class="action-btn" bindtap="showJoin">
+      <view class="action-btn-icon join"></view>
+      <text class="action-btn-text">加入课程</text>
+    </view>
+  </view>
+
+  <view wx:if="{{searchMode && !keyword}}" class="recent-panel">
+    <view class="recent-head">
+      <text class="recent-title">最近搜索</text>
+      <view wx:if="{{recentSearches.length > 0}}" class="recent-trash" bindtap="clearRecent">
+        <view class="trash-icon">
+          <view class="trash-lid"></view>
+          <view class="trash-body"></view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{recentSearches.length > 0}}" class="recent-chips">
+      <view wx:for="{{recentSearches}}" wx:key="*this" class="recent-chip" bindtap="useRecent" data-text="{{item}}">
+        <text class="recent-chip-text">{{item}}</text>
+      </view>
+    </view>
+    <view wx:else class="recent-empty">
+      <text class="recent-empty-text">暂无搜索记录</text>
+    </view>
+  </view>
+
+  <view wx:if="{{!searchMode || keyword}}" class="list-area">
+    <view wx:if="{{visibleCourses.length === 0}}" class="empty-state">
+      <view class="empty-box-icon"></view>
+      <text class="empty-text">{{searchMode ? '没有匹配的课程' : '暂无课程'}}</text>
+      <view wx:if="{{!searchMode && role === 'teacher'}}" class="empty-btn" bindtap="showCreate">
+        <text class="empty-btn-text">创建课程</text>
+      </view>
+      <view wx:elif="{{!searchMode}}" class="empty-btn" bindtap="showJoin">
+        <text class="empty-btn-text">加入课程</text>
+      </view>
+    </view>
+
+    <view wx:else class="course-list">
+      <view wx:for="{{visibleCourses}}" wx:key="id" class="course-card" bindtap="goDetail" data-id="{{item.id}}">
+        <view class="card-top">
+          <text class="card-name">{{item.name}}</text>
+          <text class="card-status {{item.status === 1 ? 'open' : 'closed'}}">{{item.status === 1 ? '开放' : '关闭'}}</text>
+        </view>
+        <text class="card-semester">{{item.semester}}</text>
+        <text wx:if="{{item.college}}" class="card-college">{{item.college}}</text>
+        <view class="card-bottom">
+          <text class="card-code">课程码: {{item.code}}</text>
+          <text class="card-count">{{item.studentCount}}人</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{createVisible}}" class="modal-mask">
+    <view class="modal" catchtap="preventBubble">
+      <text class="modal-title">创建课程</text>
+      <view class="form-item">
+        <text class="form-label">课程名称</text>
+        <input class="form-input" value="{{createForm.name}}" bindinput="onCreateInput" data-field="name" placeholder="请输入课程名称" maxlength="100" cursor-spacing="40" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">学期</text>
+        <input class="form-input" value="{{createForm.semester}}" bindinput="onCreateInput" data-field="semester" placeholder="例: 2025-2026学年第1学期" cursor-spacing="40" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">学院</text>
+        <input class="form-input" value="{{createForm.college}}" bindinput="onCreateInput" data-field="college" placeholder="选填" cursor-spacing="40" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">简介</text>
+        <textarea class="form-textarea" value="{{createForm.description}}" bindinput="onCreateInput" data-field="description" placeholder="选填" maxlength="500" cursor-spacing="40" />
+      </view>
+      <view class="modal-btns">
+        <view class="modal-btn cancel" bindtap="hideCreate"><text>取消</text></view>
+        <view class="modal-btn confirm" bindtap="handleCreate"><text>{{creating ? '创建中...' : '创建'}}</text></view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{joinVisible}}" class="modal-mask">
+    <view class="modal" catchtap="preventBubble">
+      <text class="modal-title">加入课程</text>
+      <view class="form-item">
+        <text class="form-label">课程码</text>
+        <input class="form-input code-input" value="{{joinCode}}" bindinput="onJoinInput" bindconfirm="handleJoin" confirm-type="done" placeholder="请输入6位课程码" maxlength="6" focus="{{joinVisible}}" cursor-spacing="40" />
+      </view>
+      <text class="form-tip">课程码由任课教师提供，共 6 位</text>
+      <view class="modal-btns">
+        <view class="modal-btn cancel" bindtap="hideJoin"><text>取消</text></view>
+        <view class="modal-btn confirm" bindtap="handleJoin"><text>{{joining ? '加入中...' : '加入'}}</text></view>
+      </view>
+    </view>
+  </view>
+</view>

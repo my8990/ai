@@ -1,0 +1,123 @@
+<view class="page">
+  <status-bar />
+  <view class="hero">
+    <view class="hero-bg"></view>
+    <view class="hero-content">
+      <view class="hero-icon-wrap">
+        <view class="hero-icon"></view>
+      </view>
+      <view class="hero-info">
+        <text class="hero-title">签到管理</text>
+        <text class="hero-sub">管理课程签到活动</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="selector-card">
+    <text class="selector-label">当前课程</text>
+    <picker wx:if="{{courses.length > 0}}" range="{{courses}}" range-key="name" value="{{selectedCourseId}}" bindchange="onCourseChange">
+      <view class="selector-value">
+        <text class="selector-text">{{selectedCourseName || '请选择课程'}}</text>
+        <view class="selector-arrow"></view>
+      </view>
+    </picker>
+    <view wx:else class="selector-value empty">
+      <text class="selector-text">暂无课程</text>
+    </view>
+  </view>
+
+  <view wx:if="{{selectedCourseId}}" class="action-bar">
+    <view class="action-btn primary" bindtap="showCreate">
+      <view class="action-btn-icon add"></view>
+      <text class="action-btn-text">发布签到</text>
+    </view>
+    <view class="action-btn secondary" bindtap="loadCheckins">
+      <view class="action-btn-icon refresh"></view>
+      <text class="action-btn-text">刷新</text>
+    </view>
+  </view>
+
+  <view wx:if="{{selectedCourseId && checkins.length === 0}}" class="empty-state">
+    <view class="empty-icon"></view>
+    <text class="empty-text">暂无签到记录</text>
+    <text class="empty-hint">点击上方"发布签到"开始</text>
+  </view>
+
+  <view class="checkin-list">
+    <view wx:for="{{checkins}}" wx:key="id" class="checkin-card">
+      <view class="card-left-bar {{item.status === 1 ? 'active' : 'ended'}}"></view>
+      <view class="card-body">
+        <view class="card-top">
+          <text class="card-title">{{item.title}}</text>
+          <text class="card-status {{item.status === 1 ? 'active' : 'ended'}}">{{item.status === 1 ? '进行中' : '已结束'}}</text>
+        </view>
+        <view class="card-info">
+          <text class="info-tag type">{{item.type === 1 ? '数字签到' : '二维码签到'}}</text>
+          <text class="info-tag code">签到码: {{item.code}}</text>
+        </view>
+        <view class="card-bottom">
+          <text class="card-count">{{item.checkedCount}}/{{item.totalCount}}人</text>
+          <text class="card-time">{{item.createTime}}</text>
+        </view>
+        <view class="card-btns">
+          <view class="btn-detail" bindtap="showDetail" data-id="{{item.id}}">
+            <text class="btn-text">详情</text>
+          </view>
+          <view wx:if="{{item.status === 1}}" class="btn-end" bindtap="handleEnd" data-id="{{item.id}}">
+            <text class="btn-text">结束</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{detailVisible}}" class="modal-mask" bindtap="hideDetail">
+    <view class="modal" catchtap="preventBubble">
+      <text class="modal-title">签到详情</text>
+      <view class="detail-row"><text class="label">标题</text><text class="val">{{detail.title}}</text></view>
+      <view class="detail-row"><text class="label">签到码</text><text class="val code">{{detail.code}}</text></view>
+      <view class="detail-row"><text class="label">签到人数</text><text class="val">{{detail.checkedCount}}/{{detail.totalCount}}</text></view>
+      <view class="record-list">
+        <text class="record-title">学生签到情况 ({{detail.checkedCount}}/{{detail.totalCount}})</text>
+        <view wx:for="{{detail.records}}" wx:key="studentId" class="record-item">
+          <view class="record-dot {{item.checked ? 'yes' : 'no'}}"></view>
+          <text class="r-name">{{item.nickname || item.username}}</text>
+          <text class="r-no">{{item.studentNo || ''}}</text>
+          <text class="r-status {{item.checked ? 'yes' : 'no'}}">{{item.checked ? '已签' : '未签'}}</text>
+          <text class="r-time">{{item.checkinTime || '—'}}</text>
+        </view>
+        <view wx:if="{{detail.records.length === 0}}" class="empty-tip">
+          <text>暂无学生</text>
+        </view>
+      </view>
+      <view class="modal-btns">
+        <view class="modal-btn close" bindtap="hideDetail"><text>关闭</text></view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{createVisible}}" class="modal-mask" bindtap="hideCreate">
+    <view class="modal" catchtap="preventBubble">
+      <text class="modal-title">发布签到</text>
+      <view class="form-item">
+        <text class="form-label">签到标题</text>
+        <input class="form-input" value="{{checkinForm.title}}" bindinput="onFormInput" data-field="title" placeholder="例: 第3周课堂签到" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">签到类型</text>
+        <view class="radio-group">
+          <text class="radio {{checkinForm.type === 1 ? 'active' : ''}}" bindtap="setCheckinType" data-type="1">数字签到</text>
+          <text class="radio {{checkinForm.type === 2 ? 'active' : ''}}" bindtap="setCheckinType" data-type="2">二维码签到</text>
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">过期(分钟)</text>
+        <input class="form-input" type="number" value="{{checkinForm.expireMinutes}}" bindinput="onFormInput" data-field="expireMinutes" placeholder="0表示手动结束" />
+      </view>
+      <view class="modal-btns">
+        <view class="modal-btn cancel" bindtap="hideCreate"><text>取消</text></view>
+        <view class="modal-btn confirm" bindtap="handleCreate"><text>发布</text></view>
+      </view>
+    </view>
+  </view>
+</view>

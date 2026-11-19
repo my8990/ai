@@ -1,0 +1,9 @@
+target/
+logs/
+uploads/
+.idea/
+*.iml
+application-local.yml
+application-*.local.yml
+*.sql
+t.json
